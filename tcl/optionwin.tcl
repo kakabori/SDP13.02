@@ -1,4 +1,4 @@
-#########################################################################################
+###############################################################################
 set Xpep 16
 set Cpep 1
 set Spep 3
@@ -8,7 +8,7 @@ set VCG 153.7
 set VPh 180.5
 set VMe 27.2
 set NePep 21.487
-#########################################################################################
+###############################################################################
 # Set up a window to set the peptide Gaussian parameters.
 proc pepOptWin {} {
 	global head Xpep Cpep Spep Vpep Vlipid VCG VPh VMe NePep
@@ -92,8 +92,8 @@ proc pepOptWin {} {
 	
 	#Set up an Apply button to reflect the parameter setting
 	set bframe [ frame .fitopts.bframe ]
-	button $bframe.keep -text Apply -borderwidth 4 -command { setPepGauss $head $Xpep \
-	                                   $Cpep $Spep $Vpep $Vlipid $VCG $VPh $VMe $NePep }
+	button $bframe.keep -text Apply -borderwidth 4 -command { setPepGauss $head \
+	  $Xpep $Cpep $Spep $Vpep $Vlipid $VCG $VPh $VMe $NePep }
 	grid $bframe.keep -row 1 -column 1
 	grid $bframe -row 4
 }

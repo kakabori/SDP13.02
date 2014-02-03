@@ -63,8 +63,8 @@ void sample::scale2model() {
 	c+=usesign?(TOT[h]/errf[h]*TOT[h]/errf[h]):temp*temp;
   }
   switch (normal_mode) {
-	  case 0: SCL = fabs(noscale==1 ? 1 : b/a); break; //cout << "SCL = " << SCL << endl; break;
-	  case 1: SCL = fabs(noscale==1 ? 1 : a/c); break; //cout << "SCL = " << SCL << endl; break;
+	  case 0: SCL = fabs(noscale==1 ? 1 : b/a); break; 
+	  case 1: SCL = fabs(noscale==1 ? 1 : a/c); break; 
 	  case 2: SCL = fabs(noscale==1 ? 1 : b/a); break;
   }
 }
@@ -216,7 +216,7 @@ double sample::interpolq2f(double q){
   double newF=0, temp;
   int k=1;
   while(k<=hn && Q[k]<q) k++;
-  if(k>hn) printf("Error: q is outside the range of the simulated curve\n",q);
+  if(k>hn) printf("Error: q is outside the range of the simulated curve\n");
   else polint(Q+k-0, TOT+k-0, 1, q, &newF, &temp);
   return newF;
 }
@@ -321,12 +321,13 @@ int sample::assignsigns(int objc, Tcl_Obj *const objv[]){
 
 int sample::RHOdft(double *zP,double *rP){
   /* calculate profile using discrete Fourier transform */
-  double z,dz,hg=0,*qs,*fs;
+  double z, dz;
+  //double *qs, *fs;
   int i,h;
   const int PT=1000;
   double Dtemp=D>100?g2.D:D;
-  qs=(frmelm.xv)->valueArr;
-  fs=(frmelm.yv)->valueArr;
+  //qs=(frmelm.xv)->valueArr;
+  //fs=(frmelm.yv)->valueArr;
   for(i=0,z=0,dz=Dtemp/PT/2;i<=PT;i++,z+=dz){
     for(h=1,rP[i+PT]=0;h<=hn;h++) rP[i+PT]+=F[h]*cos(Q[h]*z);
     rP[i+PT]=(rP[i+PT]*2*SCL+F[0])/D;
@@ -497,49 +498,37 @@ void sample::flatcor(){
   /* flat sample corrections
    includes absorption, footprint, Lorentz  corrections */
   FILE *fp;
-  double *FP,*FPC,*ABS,xless[2000],inteless[2000];
-//  FP=(double*)malloc(sizeof(double)*hn);
-//  FPC=(double*)malloc(sizeof(double)*hn);
-//  ABS=(double*)malloc(sizeof(double)*hn);
-  double allbeam=0,partbeam=0.,temp=1;
-  int i=0,j=0,n=0,n1=0,n2=0,n3=0;
+  //double *FP, *FPC, *ABS; 
+  double xless[2000], inteless[2000];
+  //double allbeam = 0, partbeam = 0;
+  int j = 0, n = 0;
+  //int n1=0,n2=0,n3=0;
+  double Lz = 0.0001;
+  
   printf("sample # %d>>>>",number);
   fp=fopen(beamfile,"r");
-  if(fp!=NULL){
-    while(fscanf(fp,"%lf %lf",&xless[j],&inteless[j])!=EOF) {j++;n++;}
-  }else {
-    printf("error in openning beamfile: %s\n",beamfile);
-    for(i=1;i<=hn;i++){
-      double temp, temp2, abs;
-      temp=Q[i]*wavelength/4/PI;
-	  //printf("abs: %f\n",abs_length);
-	  if (abs_length<=0) TOT[i]=pow(Q[i],lorentz);
-	  else {
-		  // Yufeng's formula
-		  /*
-		  if((temp2=2*thickness/abs_length/temp)>49) temp2=1; else temp2=1-exp(-temp2);
-		  abs=(1-exp(-2.e-7*D*50/abs_length/temp))/temp2;
-		  TOT[i]=pow(Q[i],lorentz)*abs;
-		  */
-		  
-		  // NK's formula
-//		  /*
-		  double cons = (normal_mode==0 ? 1e-7*D*50/thickness : 1); // for consistency with the Yufeng's weird (non)normalization
-		  temp2=2*thickness/abs_length/temp;
-		  abs=cons*temp2/(1-exp(-temp2));
-		  TOT[i]=pow(Q[i],lorentz)*abs;
-//		  */
-	  }
+  if(fp != NULL) {
+    while(fscanf(fp,"%lf %lf",&xless[j],&inteless[j]) != EOF) {
+      j++;
+      n++;
     }
-//    free(FP);
-//    free(FPC);
-//    free(ABS);
+  } else {
+    printf("error in openning beamfile: %s\n",beamfile);
+    for(int i = 1; i <= hn; i++) {
+      double sin_theta, abs_corr;
+      sin_theta = Q[i] * wavelength / 4 /PI;
+	    if (abs_length<=0) TOT[i]=pow(Q[i],lorentz);
+	    else { 
+		    abs_corr = 1 - exp(-2*Lz/abs_length/sin_theta);
+		    abs_corr = abs_corr / (1 - exp(-2*thickness/abs_length/sin_theta));
+		    abs_corr = abs_corr / exp(-Lz/abs_length/sin_theta);
+		    abs_corr = abs_corr * thickness / Lz;
+		    TOT[i] = pow(Q[i],lorentz) * abs_corr;
+	    }
+    }
     return;
   }
   fclose(fp);
-//  free(FP);
-//  free(FPC);
-//  free(ABS);
 }
 
 
@@ -564,29 +553,31 @@ void sample::ulvcor(){
 }
 
 
-void sample::correction(){
-  double temp=1.0;
-  int h;
+void sample::correction() 
+{
   switch(type){
-  case 1:
-    flatcor();
-	break;
-  case 2:
-    curvecor();
-	break;
-  case 4:
-    ulvcor();
-	break;
-  case 5:
+    case 1:
+      flatcor();
+	    break;
+    case 2:
+      curvecor();
+	    break;
+    case 4:
+      ulvcor();
+	    break;
+    case 5:
     //In this case, the input smp file contains form factor, not scaling factor.
-    for (h = 1; h <= hn; h++) {
-      TOT[h] = F[h];
-    }
+      for (int h = 1; h <= hn; h++) TOT[h] = F[h];
+      break;
+    default:
+      exit(1);
   }
-  for (h=1;h<=hn;h++){
-    F[h]=(F[h]<0?-1:1)*sqrt(fabs(F[h]*TOT[h]));
+  
+  for (int h = 1; h <= hn; h++) {
+    F[h] = (F[h]<0?-1:1) * sqrt(fabs(F[h]*TOT[h]));
     if(direct_err == 0) errf[h]=(sqrt(errf[h]*TOT[h]+F[h]*F[h])-fabs(F[h]));
   }
+  
   cout << "TOT[1] = " << TOT[1] << endl;
 }
 

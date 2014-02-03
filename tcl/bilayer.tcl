@@ -651,8 +651,8 @@ proc myfit {s x1 x2 iter} {
 set showsign 0
 set usesign 1
 set program_mode 3
-source frm2smp.tcl
-source SIMtoEXP.tcl
+source tcl/frm2smp.tcl
+source tcl/SIMtoEXP.tcl
 set redraw 1
 
 foreach ext {15 22 23} {
@@ -660,4 +660,4 @@ foreach ext {15 22 23} {
 }
 
 #cd /mnt/E/work/chess04b
-source optionwin.tcl
+source tcl/optionwin.tcl

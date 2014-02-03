@@ -27,11 +27,16 @@ typedef double (*Func)(double);
 
 int program_mode=3;
 int scatt_mode=0;
-int numerical=0; //1: the program computes F(q) by numerical Fourier transform over rho(z). very slow
-double amplitudes();
-int normal_mode=2; //0: pre 2010 with errors being scaled* 
-                   //1: post 2010 with errors being absolute
-                   //2: same as 0 except cons = 1 instead of the weird (non)normalization
+// numerical
+// 1: the program computes F(q) by numerical Fourier transform over rho(z). 
+//    , which is very slow
+int numerical=0; 
+int amplitudes();
+// normal_mode
+// 0: pre 2010 with errors being scaled* 
+// 1: post 2010 with errors being absolute
+// 2: same as 0 except cons = 1 instead of the weird (non)normalization
+int normal_mode = 2; 
 sample sp[SNUM];
 G2model g2;
 Tcl_Interp *interp;
@@ -202,17 +207,18 @@ double polydispcorr(double q, double Rm, double sigR){
 }
 
 
-int NK_polydispout(ClientData clientData, Tcl_Interp *interp,int objc, Tcl_Obj *const objv[]) {
+int NK_polydispout(ClientData clientData, Tcl_Interp *interp,int objc, 
+                   Tcl_Obj *const objv[]) 
+{
   FILE *fp;
-  if(objc<3) return TCL_OK;
-  double Rm,sigR;
-  Tcl_GetDoubleFromObj(interp,objv[1],&Rm);
-  Tcl_GetDoubleFromObj(interp,objv[2],&sigR);
-  fp=fopen("polydisp.dat","w");
-  double q,step=1.4/2000;
-  int i=0;
-  for(q=0.0001;q<1.4;q+=step){//1999 pts
-      fprintf(fp,"%11.4g %11.4g\n",q,polydispcorr(q,Rm,sigR));
+  if(objc < 3) return TCL_OK;
+  double Rm, sigR;
+  Tcl_GetDoubleFromObj(interp,objv[1], &Rm);
+  Tcl_GetDoubleFromObj(interp,objv[2], &sigR);
+  fp = fopen("polydisp.dat", "w");
+  double step = 1.4/2000;
+  for (double q = 0.0001; q < 1.4; q += step){
+    fprintf(fp, "%11.4g %11.4g\n", q, polydispcorr(q, Rm, sigR));
   }
   fclose(fp);
   return TCL_OK;
@@ -260,6 +266,7 @@ double eachmctf(int j, int i, double *chi){
 	  case 0: temp = (usesign ? (theor/scale-fs[i]) : (theor/scale-tmp)) / er[i]; break;
 	  case 1: temp = (usesign ? (theor-fs[i]*scale) : (theor-tmp*scale)) / er[i]; break;
 	  case 2: temp = (usesign ? (theor/scale-fs[i]) : (theor/scale-tmp)) / er[i]; break;
+	  default: exit(1);
   }
   *chi=temp*temp*(sp[j].mode=='n'?chifactorN:1);
   return theor;
@@ -290,6 +297,7 @@ double basechi(int j) {
 			case 0: temp = (usesign ? (theor/scale-fs[i]) : (theor/scale-tmp)) / er[i]; break;
 			case 1: temp = (usesign ? (theor-fs[i]*scale) : (theor-tmp*scale)) / er[i]; break;
 			case 2: temp = (usesign ? (theor/scale-fs[i]) : (theor/scale-tmp)) / er[i]; break;
+			default: exit(1);
 		}
 		chi+=temp*temp;
 		temp = (usesign ? (theor-fs[i]*scale) : (theor-tmp*scale));
@@ -318,6 +326,7 @@ double basechi_sim(int j) {
 			case 0: temp = (usesign ? (theor/scale-fs[i]) : (theor/scale-fabs(fs[i]))) / er[i]; break;
 			case 1: temp = (usesign ? (theor-fs[i]*scale) : (theor-fabs(fs[i])*scale)) / er[i]; break;
 			case 2: temp = (usesign ? (theor/scale-fs[i]) : (theor/scale-fabs(fs[i]))) / er[i]; break;
+			default: exit(1);
 		}
 		chi+=temp*temp;
 		temp = (usesign ? (theor-fs[i]*scale) : (theor-fabs(fs[i])*scale));
@@ -329,7 +338,7 @@ double basechi_sim(int j) {
 }
 
 
-double amplitudes(){
+int amplitudes(){
   fract[0]=fract[2]=0; //hard fix (peptide is in the hydrocarbon region only)
   fract[1]=1;
   g2.DC=g2.parC[0];
@@ -353,6 +362,7 @@ double amplitudes(){
   g2.parc3[1]=(g2.parc3[2]*g2.A==0?0:2.*g2.nc3*g2.Vc3/g2.parc3[2]/g2.A);
   g2.parc1[1]=(g2.parc1[2]*g2.A==0?0:2.*g2.nc1*g2.Vc1/g2.parc1[2]/g2.A);
   g2.parC[1]=/*1*/(g2.DC*g2.A-fract[1]*g2.Vpep)/(g2.DC*g2.A);
+  return TCL_OK;
 }
 
 double penalty(){
@@ -566,9 +576,9 @@ int YF_export(ClientData clientData, Tcl_Interp *interp,int objc, Tcl_Obj *const
   double *qs, *fs, *er;
   int i, j, nv;
   if(objc<3) return TCL_OK;
-  str=Tcl_GetString(objv[2]);
-  double mctf, chi,scale;
-  for(j=0;j<SNUM;j++){
+  str = Tcl_GetString(objv[2]);
+  double mctf, chi, scale;
+  for(j=0;j<SNUM;j++) {
     if(sp[j].frmelm.status==0) continue;
     strcpy(cmd,str);
     strcat(cmd,".fmf");
@@ -579,41 +589,42 @@ int YF_export(ClientData clientData, Tcl_Interp *interp,int objc, Tcl_Obj *const
     fs=(sp[j].frmelm.yv)->valueArr;
     nv=(sp[j].frmelm.xv)->numValues;
     er=(sp[j].errf);
-	switch (normal_mode) {
-		case 0: scale=(sp[j].SCL); break;
-		case 1: scale=1; break;
-		case 2: scale=(sp[j].SCL); break;
-	}
-	double *err = new double[nv];
+	  switch (normal_mode) {
+		  case 0: scale=(sp[j].SCL); break;
+		  case 1: scale=1; break;
+		  case 2: scale=(sp[j].SCL); break;
+		  default: exit(1);
+	  }
+	  double *err = new double[nv];
     for(i=1;i<nv;i++){
-      //fprintf(fp,"%f %f %f\n",qs[i],fs[i],er[i]);
+
       mctf=eachmctf(j,i,&chi);
 	  err[i]=er[i]*scale/(sp[j].mode=='n'?sqrt(chifactorN):1);
-//      chi=eachchi(j,i);
+
 	  fprintf(fp,"%11.4g %11.4g %11.4g %11.4g %11.4g %11.4g\n",qs[i],fs[i],mctf,mctf-fs[i],err[i],chi);
     }
     fclose(fp);
 
     strcpy(cmd,str);
-	if (sp[j].mode=='x') strcat(cmd,".xff");
-	if (sp[j].mode=='n') strcat(cmd,".nff");
+	  if (sp[j].mode=='x') strcat(cmd,".xff");
+	  if (sp[j].mode=='n') strcat(cmd,".nff");
     sprintf(istr,"%d",sp[j].number);
     fp=fopen(strcat(cmd,istr),"w");
-	strcpy(cmd,Tcl_GetVar(interp,"StE_header",1));
-	if (strlen(cmd)!=0) fprintf(fp,"%s\n",cmd);
-	if (/*sp[j].mode=='n' &&*/ sp[j].contrast>=0) {
-		sprintf(cmd,"SIMtoEXP_contrast %c %d %g",sp[j].mode,sp[j].contrast,sp[j].rw);
-		Tcl_EvalEx(interp,cmd,-1,TCL_EVAL_GLOBAL);
-		strcpy(cmd,Tcl_GetVar(interp,"StE_contrast",1));
-		if (strlen(cmd)!=0) fprintf(fp,"%s\n",cmd);
-	}
-	fprintf(fp,"q           |F(q)|      deltaF\n");
+	  strcpy(cmd,Tcl_GetVar(interp,"StE_header",1));
+	  if (strlen(cmd)!=0) fprintf(fp,"%s\n",cmd);
+	  if (sp[j].contrast>=0) {
+		  sprintf(cmd,"SIMtoEXP_contrast %c %d %g",sp[j].mode,sp[j].contrast,sp[j].rw);
+		  Tcl_EvalEx(interp,cmd,-1,TCL_EVAL_GLOBAL);
+		  strcpy(cmd,Tcl_GetVar(interp,"StE_contrast",1));
+		  if (strlen(cmd)!=0) fprintf(fp,"%s\n",cmd);
+	  }
+	  fprintf(fp,"q           |F(q)|      deltaF\n");
     for(i=1;i<nv;i++){
-	  fprintf(fp,"%11.4g %11.4g %11.4g\n",qs[i],fs[i],err[i]);
+	    fprintf(fp,"%11.4g %11.4g %11.4g\n",qs[i],fs[i],err[i]);
     }
     fclose(fp);
 
-	delete [] err;
+	  delete [] err;
 
     strcpy(cmd,str);
     strcat(cmd,".mctf");
@@ -627,29 +638,27 @@ int YF_export(ClientData clientData, Tcl_Interp *interp,int objc, Tcl_Obj *const
     }
     fclose(fp);
 
-	strcpy(cmd,str);
+	  strcpy(cmd,str);
     strcat(cmd,".sdp");
     sprintf(istr,"%d",sp[j].number);
     fp=fopen(strcat(cmd,istr),"w");
     qs=(sp[j].frmelm.xmsp)->valueArr;
     fs=(sp[j].frmelm.ymsp)->valueArr;
     nv=(sp[j].frmelm.xmsp)->numValues;
-	double *fCG=ymCG->valueArr;
-	double *fPh=ymPh->valueArr;
-	double *fCh=ymCh->valueArr;
-	double *fc2=ymc2->valueArr;
-	double *fc1=ymc1->valueArr;
-	double *fc3=ymc3->valueArr;
-	double *fw=ymw->valueArr;
-	double *fpep=ympep->valueArr;
+	  double *fCG=ymCG->valueArr;
+	  double *fPh=ymPh->valueArr;
+	  double *fCh=ymCh->valueArr;
+	  double *fc2=ymc2->valueArr;
+	  double *fc1=ymc1->valueArr;
+	  double *fc3=ymc3->valueArr;
+	  double *fw=ymw->valueArr;
+	  double *fpep=ympep->valueArr;
     for(i=0;i<nv;i++){
-      //fprintf(fp,"%11.4g %11.4g\n",qs[i],fs[i]);
-		fprintf(fp,"%11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g\n",qs[i],sp[j].eCG/g2.VCG*fCG[i],sp[j].ePh/g2.VPh*fPh[i],sp[j].eCh/g2.VCh*fCh[i],sp[j].ec2/g2.Vc2*fc2[i],sp[j].ec1/g2.Vc1*fc1[i],sp[j].ec3/g2.Vc3*fc3[i],sp[j].rw*fw[i],sp[j].epep/g2.Vpep*fpep[i],fs[i]);
+		  fprintf(fp,"%11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g %11.4g\n",qs[i],sp[j].eCG/g2.VCG*fCG[i],sp[j].ePh/g2.VPh*fPh[i],sp[j].eCh/g2.VCh*fCh[i],sp[j].ec2/g2.Vc2*fc2[i],sp[j].ec1/g2.Vc1*fc1[i],sp[j].ec3/g2.Vc3*fc3[i],sp[j].rw*fw[i],sp[j].epep/g2.Vpep*fpep[i],fs[i]);
     }
     fclose(fp);
   }
   qs=xmr->valueArr;
-//  fs=ymdr->valueArr;
   double *fCG=ymCG->valueArr;
   double *fPh=ymPh->valueArr;
   double *fCh=ymCh->valueArr;
@@ -672,7 +681,7 @@ int MR_calculateEDP(ClientData clientData, Tcl_Interp *interp,int objc, Tcl_Obj 
 {
   printf("Hello\n");
   // Attain probabilities
-  double *qs=xmr->valueArr;
+  //double *qs=xmr->valueArr;
   double *pCG=ymCG->valueArr;
   double *pPh=ymPh->valueArr;
   double *pCh=ymCh->valueArr;
@@ -730,9 +739,12 @@ int YF_deletesamples(ClientData clientData, Tcl_Interp *interp,int objc, Tcl_Obj
 int YF_colorp(ClientData clientData, Tcl_Interp *interp,int objc, Tcl_Obj *const objv[]) {
   //fancy things
   double *f=sp[activesp].F;
-  int i,hnt=sp[activesp].hn;
-  const char * tmp = (f[i] > 0)? colorp[1]: colorp[0];
-  for(i = 1; i <= hnt; i++) updatecolor(".f.p.", i, tmp);
+  int hnt = sp[activesp].hn;
+  const char *tmp; 
+  for(int i = 1; i <= hnt; i++) {
+    tmp = (f[i] > 0)? colorp[1]: colorp[0];
+    updatecolor(".f.p.", i, tmp);
+  }
   return TCL_OK;
 }
 
@@ -770,7 +782,7 @@ int YF_plot(ClientData clientData, Tcl_Interp *interp,int objc, Tcl_Obj *const o
   // plot the sample datasets
   int num;
   Tcl_GetIntFromObj(interp, objv[2], &num);
-  if ( Tcl_GetString(objv[1]) == "f") {
+  if (strcmp(Tcl_GetString(objv[1]), "f") != 0) {
     sp[num].drawfrm();
 	  sp[num].SCL=1.;
 	  const char *tmp = (sp[num].frmelm.status == 0)? whiteclr: colors[num];
@@ -830,7 +842,7 @@ int YF_modelplot(ClientData clientData, Tcl_Interp *interp,int objc, Tcl_Obj *co
 int NK_calcmodel(ClientData clientData, Tcl_Interp *interp,int objc, Tcl_Obj *const objv[]) {
   //calculates the model and scales the sample to model
   int i,j;
-  double deviation=0,tmp;
+  double tmp;
   //if (g2.twiggl<=0 && g2.tDBG>0) g2.tDBG*=(-1.);
   g2.parCG[0]=fabs(g2.parCG[0]); g2.parCG[2]=fabs(g2.parCG[2]);
   g2.parPh[0]=fabs(g2.parPh[0]); g2.parPh[2]=fabs(g2.parPh[2]);
@@ -952,6 +964,7 @@ int YF_getreport(ClientData clientData, Tcl_Interp *interp,int objc, Tcl_Obj *co
 		case 0: error*=scale; break;
 		case 1: error*=1;     break;
 		case 2: error*=scale; break;
+		default: exit(1);
 	}
 	sprintf(cmd,"%s insert end \"%11.4g\t%11.4g\t%11.4g\t%11.4g\t%11.4g\t%11.4g\n\"",str,sp[num].Q[i],tmp*scale,mctf,mctf-tmp*scale,error,chi);
     Tcl_EvalEx(interp,cmd,-1,TCL_EVAL_GLOBAL);
@@ -974,15 +987,16 @@ int YF_err_report(ClientData clientData, Tcl_Interp *interp,int objc, Tcl_Obj *c
     er=sp[j].errf;
     scale=sp[j].SCL;
     hn=sp[j].hn;
-	for(i=1;i<=hn;i++){
-		theor=fabs(numerical==0?sp[j].q2f(qs[i]):sp[j].q2fnumer(qs[i]));
+	  for(i=1;i<=hn;i++){
+		  theor=fabs(numerical==0?sp[j].q2f(qs[i]):sp[j].q2fnumer(qs[i]));
 	    tmp=(fs[i]==fabs(fs[i]))?fs[i]:0.0;
-		switch (normal_mode) {
-			case 0: temp = (usesign ? (theor/scale-fs[i]) : (theor/scale-tmp)) / er[i]; break;
-			case 1: temp = (usesign ? (theor-fs[i]*scale) : (theor-tmp*scale)) / er[i]; break;
-			case 2: temp = (usesign ? (theor/scale-fs[i]) : (theor/scale-tmp)) / er[i]; break;
-		}
-		chi+=temp*temp;
+		  switch (normal_mode) {
+			  case 0: temp = (usesign ? (theor/scale-fs[i]) : (theor/scale-tmp)) / er[i]; break;
+			  case 1: temp = (usesign ? (theor-fs[i]*scale) : (theor-tmp*scale)) / er[i]; break;
+			  case 2: temp = (usesign ? (theor/scale-fs[i]) : (theor/scale-tmp)) / er[i]; break;
+			  default: exit(1);
+		  }
+		  chi+=temp*temp;
     }
     if(objc>1) fprintf(fp,"%d: %f\n",j,chi);
     else printf("%d: %f\n",j,chi);
@@ -992,14 +1006,16 @@ int YF_err_report(ClientData clientData, Tcl_Interp *interp,int objc, Tcl_Obj *c
 }
 
 
-int main(int argc, char *argv[]){
-  interp=Tcl_CreateInterp();
-  Tk_MainEx(argc, argv, Tcl_AppInit,interp);
+int main(int argc, char *argv[])
+{
+  interp = Tcl_CreateInterp();
+  Tk_MainEx(argc, argv, Tcl_AppInit, interp);
   return(0);
 }
 
 
-int Tcl_AppInit(Tcl_Interp *interp){
+int Tcl_AppInit(Tcl_Interp *interp)
+{
   /* command registration */
   int i;
   if (Tcl_Init(interp) != TCL_OK) {
@@ -1012,6 +1028,7 @@ int Tcl_AppInit(Tcl_Interp *interp){
   if (Blt_Init(interp) !=TCL_OK) {
     return TCL_ERROR;
   }
+  
   Tcl_CreateObjCommand(interp,"plot", YF_plot, (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateObjCommand(interp,"newsample", YF_newsample, (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateObjCommand(interp,"parameter", YF_parameter, (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
@@ -1019,11 +1036,8 @@ int Tcl_AppInit(Tcl_Interp *interp){
   Tcl_CreateObjCommand(interp,"colorp", YF_colorp, (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateObjCommand(interp,"export", YF_export, (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateObjCommand(interp,"calculateEDP", MR_calculateEDP, (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
   Tcl_CreateObjCommand(interp,"deletesamples", YF_deletesamples, (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateObjCommand(interp,"mdplot", YF_modelplot, (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
-
   Tcl_CreateObjCommand(interp,"calcmodel", NK_calcmodel, (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateObjCommand(interp,"calcFourier", NK_calcFourier, (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateObjCommand(interp,"amoeba", YF_amoeba, (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
@@ -1036,16 +1050,17 @@ int Tcl_AppInit(Tcl_Interp *interp){
   Tcl_CreateObjCommand(interp,"spinfoN", YF_spinfoN, (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateObjCommand(interp,"polydispout", NK_polydispout, (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateObjCommand(interp, "setNePep", setNePep, (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  
   for(i=0;i<Tnum;i++) {xpin[i]=1;}
   int j[]={0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 19, 20, 21, 22, 23};
   for(i=0;i<Pnum;i++) {xpin[j[i]]=0;}
   for(i=0;i<Pnum;i++) {sx[j[i]]=0.1;}
   Init_vectors();
   g2.init();
-  x=g2.parCG;
+  x = g2.parCG;
   linkvar();
   idum=time(NULL);
-  Tcl_EvalEx(interp,"source bilayer.tcl",-1,TCL_EVAL_GLOBAL);
+  Tcl_EvalEx(interp,"source tcl/bilayer.tcl",-1,TCL_EVAL_GLOBAL);
   Tcl_EvalEx(interp,"wm title . \"Bilayer by Norbert.Kucerka@nrc.gc.ca\"",-1,TCL_EVAL_GLOBAL);
   return TCL_OK;
 }
@@ -1190,25 +1205,26 @@ double active_interpol(double qq){
 }
 
 
-int setNePep(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[])
+int setNePep(ClientData clientData, Tcl_Interp *interp, int objc, 
+             Tcl_Obj *const objv[])
 {
-  //If head = 1, peptide is assumed to be in the head region. If head != 1, peptide is
-  //assumed to be in the tail region.
+  // If head = 1, peptide is assumed to be in the head region. If head != 1, 
+  // peptide is assumed to be in the tail region.
   int head;
   Tcl_GetIntFromObj(interp, objv[1], &head);
   cout << "head = " << head << endl;
-  //NePep is the number of electrons in the peptide. This value gets assigned to
-  //either eCh or ec1 of sp. eCh is the number of electrons in Choline. ec1 is
-  //that in methine (double bond).
+  // NePep is the number of electrons in the peptide. This value gets assigned 
+  // to either eCh or ec1 of sp. eCh is the number of electrons in Choline. ec1 
+  // is that in methine (double bond).
   double NePep;
   Tcl_GetDoubleFromObj(interp, objv[2], &NePep);
   cout << "NePep = " << NePep << endl;
 
-  //Go through all samples and find highlighted ones. Then, modify eCh or ec1 of
-  //the highlighted samples.
+  // Go through all samples and find highlighted ones. Then, modify eCh or ec1 
+  // of the highlighted samples.
   for (int j = 0; j < SNUM; j++) {
     if (sp[j].frmelm.status == 0) {
-      //If a sample is not highlighted in the GUI, status is equal to zero.
+      // If a sample is not highlighted in the GUI, status is equal to zero.
       continue;
     }
     cout << "sp[" << j << "]" << ": status = 1" << endl;
