@@ -199,6 +199,7 @@ menu $m -tearoff 0
 $m add command -label "export" -command {export all [file rootname $smpfilename]}
 $m add command -label "peptide" -command {pepOptWin}
 $m add command -label "randomization" -command {randOptWin}
+$m add command -label "additional constraints" -command {soft_constraint_window}
 
 set m $w.opt.m
 menubutton $w.opt -text Opt -menu $m
@@ -661,3 +662,4 @@ foreach ext {15 22 23} {
 
 #cd /mnt/E/work/chess04b
 source tcl/optionwin.tcl
+source tcl/globalVariables.tcl

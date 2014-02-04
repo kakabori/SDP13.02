@@ -1,21 +1,43 @@
 #ifndef GUARD_G2MODEL_H
 #define GUARD_G2MODEL_H
 
+
+class Gauss {
+public:
+  set_params(double a, double b, double c, double d, double e, double f, 
+             double g, double h, double i) { 
+               center = a; ampl = b; sigma = c; 
+               target_c = d; target_a = e; target_s = f;
+               tol_c = g; tol_a = h; tol_s = i;
+             }
+  double penalty();
+  double center; // center
+  double ampl; // amplitude
+  double sigma; // sigma
+  double target_c;
+  double target_a;
+  double target_s;
+  double tol_c;
+  double tol_a;
+  double tol_s; 
+};
+
+
 class G2model {
 // delaration of the data structure representing the model of a bilayer profile
 // in terms of (volume) probability distribution functions
 protected:
 public:
   char name[16];
-  double parCG[3];//XH1,C1,SIG1			- CG gaussian			//0-2
-  double parPh[3];//XH2,C2,SIG2			- PCN gaussian			//3-5
-  double parCh[3];//XH3,C3,SIG3			- ChCH3 gaussian		//6-8
-  double parC[3];//XC,CC,SIGC			- C error function		//9-11
-  double parc1[3];//XDB,CDB,SIGDB		- double bond gaussian	//12-14
-  double parc3[3];//XM,CM,SIGM			- methyl gaussian		//15-17
-  double parr,parr12;// r = Vc3/Vc2, r12 = Vc1/Vc2				//18,19
-  double RCG,RPh;// RCG = VCG/VHL, RPh = VPh/VHL				//20,21
-  double Rm,sigR;//polydispersity								//22,23
+  double parCG[3]; //XH1,C1,SIG1			- CG gaussian			//0-2
+  double parPh[3]; //XH2,C2,SIG2			- PCN gaussian			//3-5
+  double parCh[3]; //XH3,C3,SIG3			- ChCH3 gaussian		//6-8
+  double parC[3]; //XC,CC,SIGC			  - C error function		//9-11
+  double parc1[3]; //XDB,CDB,SIGDB		- double bond gaussian	//12-14
+  double parc3[3]; //XM,CM,SIGM			- methyl gaussian		//15-17
+  double parr,parr12; // r = Vc3/Vc2, r12 = Vc1/Vc2				//18,19
+  double RCG,RPh; // RCG = VCG/VHL, RPh = VPh/VHL				//20,21
+  double Rm,sigR; //polydispersity								//22,23
 
   double A;														//24
 
@@ -56,6 +78,12 @@ public:
   double z2rhoW(double);
   double z2rhopep(double);
   double penalty;
+  Gauss carbGlyc; // CG = Carbonyl-Glycerol group
+  Gauss phosphate; // Ph
+  Gauss choline; // Ch
+  Gauss methine; // c1 = double bond, CH
+  Gauss methyl; // c3 = terminal CH3
+  double get_penalty();
 };
 
 #endif

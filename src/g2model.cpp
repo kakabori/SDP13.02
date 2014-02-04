@@ -211,3 +211,43 @@ double G2model::wiggeling()
   return tmp;
 }
 
+
+/******************************************************************************
+Collect the penalty term from each Gauss object, sum them up, and return the 
+sum.
+******************************************************************************/
+double G2model::get_penalty()
+{
+  double tmp, ret = 0;
+  
+  ret += carbGlyc.penalty();
+  ret += phosphate.penalty();
+  ret += choline.penalty();
+  ret += methine.penalty();
+  ret += methyl.penalty();
+  
+  return ret;    
+}
+
+
+/******************************************************************************
+
+******************************************************************************/
+double Gauss::penalty()
+{
+  double ret = 0, tmp;
+  if (tol_c > 0) {
+    tmp = (center-target_c) / tol_c;
+    ret += tmp*tmp;
+  }
+  if (tol_a > 0) {
+    tmp = (ampl-target_a) / tol_a;
+    ret += tmp*tmp;
+  }
+  if (tol_s > 0) {
+    tmp = (sigma-target_s) / tol_s;
+    ret += tmp*tmp;
+  }
+  
+  return ret;
+}

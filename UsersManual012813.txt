@@ -1,0 +1,456 @@
+Users Manual for SDP Program
+updated on 09/2013.
+
+The SDP model is based on probability distributions and follows
+definitions/equations in SDPrelationsH3.doc.
+
+Program fits SDP model to relative F(q) data, while it can handle
+2 to 3 Gaussians for headgroup, one Gaussian for a methyl trough,
+one for double bond, and error function for hydrocarbon region.
+Additional peptide/cholesterol is modeled by the same distribution
+as that of CH2 groups (not finnished yet!!!).
+Total probability is equal to 1 at any point (z) across the bilayer!!!
+
+Program displays neutron and x-ray form factors (CTFn and CTFx),
+the probability distributions of particular subgroups (PROFILE) and total
+neutron scattering length densities (SLD) and electron density profiles (EDP).
+
+Note: main panel includes only volume/thickness/area parameters, while
+parameters related to scattering properties (neutron scatt. length, number of 
+el.) are entered for each samplist through the .smp file.
+
+SECTION I: SETTING UP data.smp files:
+Sample template:
+
+# samplist 9 is a combination of data files dppc_12 (D=65.6) and
+# dppc_34 (D=61.6) from CHESS'05
+# samplist 19 is the same one with modified errors (final set)
+# both corrected for undulation correction (1.019)
+#
+# samplist 5 is from ULV data (dppc_E2)
+# and 15 is one with a final set of error distribution
+set direct_err 1
+set stepsize_integral 0.05
+samplist 0 DPPC@50
+samplist 19 ORI12+34err
+parameter 19 nobeam \
+1.1808 2.5 5 0 10 1 -65.6 48 0.0185 \
+x 0.333 67.0 70.0 27.0 8.0 0.0 9.0 0.0 \
+Data starts here.
+
+samplist 15 ULVE2cut2err
+parameter 15 nobeam \
+1.1808 0.0 0 1 1000 0 -65.6 60 0.0185 \
+x 0.333 67.0 70.0 27.0 8.0 0.0 9.0 0.0 \
+Data starts here.
+
+samplist 20 NEUTRONS
+
+samplist 21 DPPC_100
+parameter 21 nobeam \
+6 0.0 0 1 1000 2 -65.6 60 0.0 \
+n 6.38e-6 3.775e-4 3.611e-4 -1.371e-4 -0.083e-4 0.0 -0.457e-4 0.0 \
+Data starts here.
+
+
+#  Comments may be interspersed in the file with a # sign in front
+of them. (not within the lines ended with \)
+
+The data are the scale factors which are like the square of F(q), but
+absorption and Lorentz corrections must be done and errors assigned.
+
+<Set direct_err 1>  The program calculates the errors sigma_f for F(q)
+from the assigned errors sigma_a given in the third column of 
+the data.smp file as sigma_f = sigma_a.
+(values from the third column are absolute errors for Fs)
+!!! Note that various df programs use sigma_f = scale * sigma_a prior to 2010 !!!
+!!! see also SECTION V: Other Features: paragraph 6. !!!
+
+NEW IN SDP13.02
+<set direct_err 2> The program calculates sigma on F(q) from sigma on scaling
+factor which is output by NFIT. 
+
+<Set direct_err 0>  is appropriate for gel phase data - see DA.txt
+        The errors in the intensity are estimated as 
+	sqrt(I*stepsize)+sigma_a and these errors propagate 
+	through with the calculation of F.
+
+<Set stepsize_integral 0.05> = integration step.
+
+Then a list of samples is given with three control lines followed by 
+data lines:
+  
+Control Line #1:  
+	samplist (this word starts a new sample)
+	19 (ID of this sample) 
+	ORI12+34err  (string for the sample name)
+	
+Control Line #2:  (end this line with \)
+	parameter (word identifies beginning of parameter list)
+	19 (ID sample, again) 
+	nobeam  -  possible beam file name beam.bm, normally 
+	'nobeam' for df
+
+Control Line #3: (1.1808 2.5 5 0 10 1 -65.6 48 0.0185 \)
+  1.1808 (X-ray wavelength)
+  
+  2.5    (absorption coefficient) (use non-positive number for skipping this 
+	       correction) This number changes, depending on the wavelength. Use 
+	       www.cxro.lbl.gov to calculate attenuation length for ORIs, and 
+	       transmission measurements for ULVs (xa=-thickness/ln(T); T=I/I0).
+	       
+  5      (length of sample in mm for flat samples, OR radius of beaker if you 
+         entered curved above; the radius of our beaker is 17.5 mm). This is 
+         not used for flat samples if there is no beam file.
+         
+	0      This is used to distinguish between ULVs (1) and ORIs (0) while 
+	       applying appropriate absorption (see above) and polydispersity 
+	       corrections. The latter can be turned off by setting Rm=sigR=0 in GUI.
+	       
+	       NEW IN SDP13.02
+	       Enter 2 if the data are already in |F(q)|.
+	       
+	10     (thickness of the sample in microns)
+	
+	1      (Lorentz correction; 2 for powder (Cap) samples, 1 
+	       for oriented samples and 0 for LitData where Lorentz 
+	       correction has already been made)
+	       
+  -63.2　(D-spacing in angstroms) but use a negative number in df. 
+	       This is a signal for the program to read the q column of 
+	       data in the .smp file.
+	       
+	72     (area per lipid  just a starting point, not so important)
+	
+	1.075  (F0 - this is a relic from the da program; not used in df)
+	       (end this line with \)
+
+Control Line #4: (x 0.333 67.0 70.0 27.0 8.0 0.0 9.0 0.0 \)
+	x	Switch between x-ray (x) and neutron (n) data
+	0.333	The scattering length density or electron density of water
+	67.0	The scattering length or number of electrons in headgroup 1 (e.g.: CG).
+	70.0	The scattering length or number of electrons in headgroup 2 (e.g.: PCN).
+	27.0	The scattering length or number of electrons in headgroup 3 (e.g.: CholCH3).
+	8.0	The scattering length or number of electrons in CH2 group.
+	0.0	The scattering length or number of electrons in CH group.
+	9.0	The scattering length or number of electrons in terminal methyl.
+	0.0	The scattering length or number of electrons in peptide/cholesterol.
+	      (end the line with \)
+	       
+Control Lines #5 to the end of the entire q range:
+	(end each of these lines with \. DO NOT put any spaces after the \).
+	These are the data. They should be entered as:  
+	Intensity    q    Error\  
+	q is used in df instead of 2-theta in da by using negative D 
+	in Line #3 above. (can separate columns by tab or space(s))
+	E.g.,  139.26  0.125403  0.5 \
+
+	CAUTION: Do not have the first line of data begin with a 0,
+	or the data file will not appear in Df.
+
+Repeat this sequence of lines 1 to end of the entire q range 
+for each sample in the list.  After all samples one may add lines:
+	plot frm n   
+where n is the number in the sample list, but it is just as easy to click
+on the sample in the sample list window. 
+
+
+SECTION II: Convenient Commands:
+
+%convert <frm.dat> <output.smp> <error>
+(added by NK as frm2smp.tcl in the df.exe directory).
+The input are the scaling factors from the frm.dat file from NFIT.
+Format = pixels, scaling factor, cz(background), qz
+This command converts the frm file to an smp file that is used by df.
+The error is an estimated error that will eventually be set manually 
+see YL thesis),  but should be entered here as some reasonable constant
+(.05, for example).  The convert command in frm2smp also writes some 
+default values of parameters (from YL's thesis) for use in control 
+lines 1-3 above, that should be changed to the actual ones following
+previous paragraph.
+
+%EXPtoSMP <input.ff> <output.smp>
+This converts experimental form factors organized in common way
+(i.e., q FF err) from file input.ff to output.smp file following
+the smp convention (i.e., FF^2 q err).
+
+%moderr <file.smp> <samplist #> <qlow> <qhigh> <error>
+This command will change errors from q=qlow to q<qhigh in the file
+<file>.
+
+%multierr <file.smp> <samplist #> <coeficient>
+This command will multiply errors in the file <file>.
+
+%modint <file.smp> <samplist #> <qlow> <qhigh> <newvalue>
+This command will assign a new value for intensity between qlow and
+qhigh.
+
+%delint <file.smp> <samplist #> <qlow> <qhigh>
+This command will delete points between qlow and qhigh.
+
+%convbin <frm.dat> <output.smp> <n>
+This command will average real experimental points from the frm.dat 
+file including negative numbers.  It will bin n points from frm.dat
+file and write the output into the output.smp file.  It will assign
+also a standard error of the mean values which are, however, 
+calculated from relative scaling factors in frm.dat file.
+
+%bin <file.smp> <samplist #> <n>
+This command will bin n points from smp file. It will assign
+also a standard error of the mean values.
+
+%correct <const>
+will make final correction for undulating bilayers, where
+const=<alpha>/2. This number is usually .012, but should be 
+calculated. Don't use this procedure to apply the undulation correction. Use
+correctq instead (see below).
+
+%correctq <file.smp> <samplist #> <const>
+will make geometrical correction (multiply qs), where
+const=<alpha>/2. This number is usually .012, but should be 
+calculated. Use this procedure to apply the undulation correction.
+
+%scalesim <samplist #>
+will scale active samplists to desired (simulation) samplist
+
+
+SECTION III: USING Bilayer:
+
+The program has two windows.  When running 
+the windows version, the bilayer.exe window is opened and operates like
+a unix window.  It is used to change directories and can be used 
+to enter commands.  When running the Linux version, bilayer.exe is the
+window from which % ./bilayer was opened.
+
+Concentrate on the "Bilayer" window.  Go to 'file' (upper left), 'open' a
+*.smp file.  Underneath will appear a list of the data sets in the
+data.smp files.  Click on one of these names and the form factors 
+will appear in the appropriate window (x-ray or neutron)
+on the screen. Click again and it will vanish.  
+Click on as many data sets as you wish to fit simultaneously.
+The program screen can show either CTF or RHO or SLD window by clicking 
+on desired one. These windows can be also separated from the program
+by holding CTRL and left mouse click; this way it is possible to get
+several windows on the screen at the same time.
+
+The names of the panels in the Bilayer window are
+Sample list	 Upper left - the one you have just been clicking on
+Command pad	 Five lines below sample list - for entering commands
+	       (Alternatively, enter commands in the dos window.)
+Chi^2 bar	 Three lines - also includes 'amoeba' button to start fits 
+		 and 'Fourier' button for discrete Fourier transform (useful for
+		 diffraction peaks only); It shows:
+	MSD	reduced root mean standard deviation
+	X2red	reduced X2 (the residuals to the F(q), and EXcluding penalty terms)
+		by dividing X2 by v-N-f-1+c, where v is # of data points,
+		N is # of samples, f is # of free parameters, and c is # of soft constraints
+	PT2	just the Bayesian penalty term part
+		Subtract this from PX2tot for sum of residuals just to the data.
+	PX2tot	total mean square residuals INcluding Bayesian penalty terms
+		This is what is being minimized.
+Statistics is split into that related to neutron and x-ray data on next two lines.
+The number underneath the PT2 term is an adjustable factor chifactorN that scales
+the weighing of neutron data. Neutron data impact on the total X2 is shown by X2fractN
+and x-ray data impact is shown by X2fractX. Ignore the vestigial MSD numbers.
+
+
+Parameter list	 Explained next - see also template.txt 
+
+Before fitting, it is necessary to choose the parameters at the bottom 
+of the GUI window.  It is easiest to input these from a <model.out> file using
+source model.out
+
+export2g model.out
+This command writes the file that contains all of the parameters of the
+curent fit.
+
+set repeat n
+This command sets the number of iterations for the fit.  n=50 is a good
+choice, usually n=1000 will run to completion.  One can use a right-click
+on the amoeba button for normalization.  Fitting commences when the button 
+labelled 'amoeba' is left-clicked.  After fitting completes, the model
+CTFs and SLD/EDPs appear in windoww.  In addition, probability distributions 
+for each groupe (each part of the model) blue - HG2 (PC); green - HG1 (CG); cyan - MT;
+magenta - water and yellow - methylenes error func; medium yellow - peptide/cholesterol.
+
+set showsign 0 This shows both the data and the fit with absolute values
+	on the screen.
+set showsign 1 This returns fit to the original sign convention.
+
+set usesign 1/0 (to see/hide negative values of absolute form factors
+and include them in the calculation).
+
+set max_peak 1/2/3
+1 - calculates DHH distance as a HG1-HG1 distance (usually CG-CG)
+2 - calculates DHH distance as a HG2-HG2 distance (usually PCN-PCN; this is default)
+3 - calculates DHH distance as a HGp-HGp distance (usually Ch-Ch)
+
+set redraw 1 to update values of all parameters, and CFT and RHO windows
+	after each iteration
+
+
+SECTION IV: PARAMETERS:
+
+Parameters color code is such that one is supposed to fill in green ones,
+light blue are fitting parameters varied by the program (they turn red 
+if fixed) and blue are the parameters calculated by the program.
+Bad choices of initial values will derail the fit.
+Initially, some trial and error is required - once one has located the 
+general region for a given set of samples, save the fit to a file
+model.out to use to start subsequent fits. 
+
+The first type are: (well known parameters)
+D	set to fully hydrated value (or bigger) to show the full x-axis 
+	in RHO plots.
+nC2	set to number of methylene groups in the hydrocarbon chains
+nC1	set to number of methine groups in the hydrocarbon chains
+VL	set to the measured volume per lipid molecule
+VHL	set to the headgroup volume VH of the lipid
+Vpep	set to the measured volume per peptide molecule
+
+The values of the first type of parameter have very small errors and 
+will be assumed to be known to high precision.  In contrast, the other 
+parameters in green may or may not be known so precisely.  The value set
+in green for these parameters is completely ignored when the entry for t 
+(tolerance) just below this parameter is a non-positive number.  When the 
+tolerance is set to a positive value, the fit assigns a (quadratic) 
+Beysian penalty that is inversely proportional to the magnitude of the
+control parameter value.
+
+The second type are: (soft constraint parameters)
+RCG	volume ratio of the CG headgroup to the total headgroup VCG/VHL (0.42)
+RPh	volume ratio of the Ph headgroup to the total headgroup VPh/VHL (0.35)
+r	ratio of volumes of terminal methyl to methylene (1.9)
+r12	ratio of volumes of methine group to methylene (0.82)
+Dc	gibbs dividing surface of hydrocarbon region
+DH1	distance from headgroup peak to hydrocarbon region
+dXH distance between two headroup peaks (XPh-XCG)
+dXH2 distance between another two headroup peaks (XPh-XcholCH3)
+dXH3 distance between headroup peak and hydrocarbon region (XCG-DC)
+SC	width of the methylenes error func (2.42 Klauda'05)
+
+
+Fitted parameters are shown in light blue.  
+In order they are:
+
+Gaussians  Position  Height  Width
+Head-1        XCG    (CCG)    SCG  (CG Gaussian)
+Head-2        XPh     (CPh)    SPh  (PCN Gaussian)
+Head-3        XCh     (CCh)    SCh  (cholCH3 Gaussian)
+Methylene	  XC	    (CC)	SC
+Methine	  Xc1	    (Cc1)	Sc1
+Methyl        Xc3      (Cc3)    Sc3
+Rm	for the vesicle size (radius) and
+sigR	for polydispersity width (gaussian)
+!!! Rm and sigR were a problem in the previous version !!!
+
+Notice that the above quantities can be held fixed by right 
+clicking on them (and they then turn red).  To get a 1G model,
+one sets C2 to zero and fixes it.  Fix also SIG2 and XH2.
+Heights are calculated from known/estimated volumes and therefore
+shown in blue.
+
+Output parameters shown in blue:
+
+A     area
+VCG   volume of the first part of the headgroup (CG)
+VPh	  volume of the second part of the headgroup (PCN)
+VCh	  volume of the third part of the headgroup (cholCH3)
+Vc2	  volume of the methylene group
+Vc1	  volume of the methine group
+Vc3	  volume of the methyl group
+DPP	  twice the position of the maximum in the EDP 
+DB	  the Luzzati thickness of the bilayer
+negP  sum of negative probabilities (ideally it should be 0)
+note: negative probabilities contribute to the penalties with the tolerance
+defined by the parameter 'StEP', which is also used as step size for the calculation
+of (negative) probabilities
+
+
+SECTION V: Other Features:
+
+
+1.  The command,  report n, brings up a box that shows 
+	on first line: the sum of the chi^2 contributions, #of data points, and averaged chi^2
+	Col 1: q value,
+	Col 2: the experimental Fexp(q), 
+	Col 3: the fitted Ffit(q), 
+	Col 4: the residual (Fexp(q)-Fexp(q)), 
+	Col 5: the estimated mean square deviation of the input data in the .smp file, 
+	Col 6: the contribution to chi^2 from this datum.  
+	The fitted F(q) column is not normalized to the first entry 
+	any more.
+
+
+1b. To get the information from the first line above manually, click off all 
+    data sets except the n set, and then right click amoeba. To get the chi^2 
+    just for data, subtract PT2 and divide PX2tot by number of data points. 
+    This agrees with adding and averaging the residuals squared in report n
+
+
+2.	'export' on the tools menu saves plotted data on the screen in several 
+    files:
+	  filename.mctf  Model CFT: q, model|F(q)|
+	  filename.mrho  Model RHO: z, RHO_HG1, RHO_HG2, RHO_CH2, RHO_W, RHO_MT, RHO_P
+	  filename.sdp   Model ScatteringDensityProfile:  z, SDP_total
+	  filename.fmf   same as  <report n>
+
+
+3.	SIG parameter is a Gaussian sigma, which relates to FWHM through
+	  FWHM=2*1.18*sigma
+
+
+4.	ZOOM: press CTRL and keep it pressed while drawing zooming box
+	  by left-clicking the mouse to define one corner, drag the 
+	  mouse, and left click again to define the diagonal corner.  
+	  UNZOOM: press CTRL and right-click inside the image
+
+
+5.	Change the qz range in the ctf panel  (Can do either x or y axis.)
+	  $ctfw axis configure x -max 0.5   
+	  (The $ must be typed - not a prompt).
+
+
+6.  Reconciliation between two different normalization approaches used
+    throughout the life of Df/bilayer programs
+    
+	  'set normal_mode 0' for Yufeng's way (i.e., sigma_f=scale*sigma_a and
+		additional coeficient cons=1e-7*D*50/thickness)
+		
+	  'set normal_mode 1' for Norbert's way where values from the third column of 
+	  smp file are absolute errors for scaled Fs (i.e., sigma_f=sigma_a)
+	  !!! need to reload smp file after the change  of normal_mode value!!!
+	  
+	  NEW IN SDP13.02
+	  'set normal_mode 2' for KA's way where sigma_f = scale * sigma_a. This is 
+	  the most natural way to treat uncertainties. Use Norbert's way only if you
+	  really know what you are doing.
+
+
+7. This item discusses the relative weights that should be given to the x-ray 
+   and neutron data when doing a fit. This first involves  estimating the 
+   experimental sigma uncertainties. In recent DOPC work, smooth curves were 
+   drawn though each data set and the sigmas were adjusted using multierr until 
+   chi2~1 for each data set. Smooth curves were generated using the SDP program 
+   and allowing relatively unconstrained and physically unrealistic models. 
+
+
+Just assigning the same weight to neutrons and x-rays (chifactorN=1 on GUI) is 
+inappropriate because there are many fewer N points than X points. It is also 
+inappropriate to weight the N data equally with the X data because the X data 
+cover 4 times as much q space.  There are two criteria for estimating the proper 
+chifactorN value. 
+(i) The a priori way is to assign chifactorN to equalize the density of points 
+    in q space. In an example in JN11/SDP, there are 777 X points over a range 
+    of 0.8 and 32 N points over a range of 0.2, so 
+    chifactorN = (777/0.8)/(32/0.2) = 6. If there are three N data sets 
+    (N50, N70, N100), then chifactorN = 2 if we suppose that the three neutron 
+    data are not independent and chifactorN=6 if they are considered to be 
+    completely independent. 
+(ii) The second way is to adjust f empicially to get the same chi2N and chi2X; 
+     these are calculated after a fit with an appropriate value of chifactorN by 
+     changing chifactorN to 1 and right clicking on amoeba. 
+It has been found in the DOPC example that both criteria were satisfied for the 
+example above and X2fractN~0.2 when chifactorN=6 with only N100 and when 
+chifactorN=2 with N100, N70 and N50, corresponding to the ratio of q space 
+covered by X vs. N data.

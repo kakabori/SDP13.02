@@ -365,9 +365,13 @@ int amplitudes(){
   return TCL_OK;
 }
 
-double penalty(){
-  /* calculate the penalty terms */
-  double pnty=0,tmp;
+
+/******************************************************************************
+  calculate the penalty terms 
+******************************************************************************/  
+double penalty()
+{ 
+  double pnty = 0, tmp;
   amplitudes();
   g2.VH=g2.VHL+fract[0]*g2.Vpep;
   g2.dXH=g2.parPh[0]-g2.parCG[0];
@@ -391,6 +395,9 @@ double penalty(){
   if(g2.tRPh>0){tmp=(g2.sRPh-g2.RPh)/g2.tRPh;pnty+=tmp*tmp;}
   if(g2.twiggl>0){tmp=(0.0-g2.wiggl)/g2.twiggl;pnty+=tmp*tmp;}
   //if(g2.tDBG>0){tmp=(g2.DB-g2.DBG)/g2.tDBG;pnty+=tmp*tmp;}
+
+  // Go through Gauss objects soft constraints
+  pnty += g2.get_penalty();
   
   return pnty;
 }
@@ -410,8 +417,12 @@ void updatecolor2(const char *widget, int k, const char *tail, const char *color
 }
 
 
-double vec(double *pars){
-  /* return chisquare + penalty terms*/
+/****************************************************************************** 
+return chisquare + penalty terms
+This is the function that gets minimized by the amoeba function.
+******************************************************************************/
+double vec(double *pars)
+{  
   int i,j;
 
   for(i=0;i<rdim;i++) x[xindex[i]]=pars[i];
@@ -424,17 +435,23 @@ double vec(double *pars){
 
   if (x[4]*x[5]==0) {x[3]=x[0];}
 
-  g2.penalty=penalty();
-  g2.basekN=0,g2.basekX=0;
-  g2.rsdtN=0,g2.rsdtX=0;
-  for (j=0;j<SNUM;j++){
+  g2.penalty = penalty();
+  g2.basekN = 0, g2.basekX = 0;
+  g2.rsdtN = 0, g2.rsdtX = 0;
+  for (j = 0; j < SNUM; j++) {
 	  if (sp[j].frmelm.status==0) continue;
-  	  if (sp[j].mode=='n') {g2.basekN+=basechi(j); g2.rsdtN+=g2.rsdj;}
-      else if (sp[j].mode=='x') {g2.basekX+=basechi(j); g2.rsdtX+=g2.rsdj;}
+  	if (sp[j].mode=='n') {
+  	  g2.basekN+=basechi(j); 
+  	  g2.rsdtN+=g2.rsdj;
+  	}
+    else if (sp[j].mode=='x') {
+      g2.basekX += basechi(j); 
+      g2.rsdtX += g2.rsdj;
+    }
   }
-  g2.basek=g2.basekN+g2.basekX;
-  g2.rsd=g2.rsdtN+g2.rsdtX;
-  return(g2.basek+g2.penalty);
+  g2.basek = g2.basekN + g2.basekX;
+  g2.rsd = g2.rsdtN + g2.rsdtX;
+  return g2.basek + g2.penalty;
 }
 
 
