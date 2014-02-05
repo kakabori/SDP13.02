@@ -218,7 +218,7 @@ sum.
 ******************************************************************************/
 double G2model::get_penalty()
 {
-  double tmp, ret = 0;
+  double ret = 0;
   
   ret += carbGlyc.penalty();
   ret += phosphate.penalty();

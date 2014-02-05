@@ -4,12 +4,15 @@
 
 class Gauss {
 public:
-  set_params(double a, double b, double c, double d, double e, double f, 
-             double g, double h, double i) { 
-               center = a; ampl = b; sigma = c; 
-               target_c = d; target_a = e; target_s = f;
-               tol_c = g; tol_a = h; tol_s = i;
-             }
+  void set_params(double a, double b, double c) { 
+    center = a; ampl = b; sigma = c; 
+  }
+  void set_targets(double a, double b, double c) {
+    target_c = a; target_a = b; target_s = c;
+  }                
+  void set_tols(double a, double b, double c) {
+    tol_c = a; tol_a = b; tol_s = c;
+  }
   double penalty();
   double center; // center
   double ampl; // amplitude

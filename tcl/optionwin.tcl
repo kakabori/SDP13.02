@@ -135,7 +135,7 @@ proc setPepGauss {head Xpep Cpep Spep Vpep Vlipid VCG VPh VMe NePep} {
 		fix 12
 		fix 14
 		fix 19
-		#This command sets the appropriate number of electrons to the user input value
+		#This command sets the number of electrons to the user input value
 		setNePep $head $NePep
 	} else {
 		#peptide is in tail region
@@ -328,16 +328,17 @@ proc go {direc} {
 proc soft_constraint_window {} {
 	global choline phosphate carbGlyc methine methyl
 	
-	set w 10
+	# The width of entry fields
+	set w 7 
 	
 	toplevel .sfcnst
 	wm title .sfcnst "Additional Soft Constraints"
 
 	set f [ frame .sfcnst.f]
 	
-	label $f.l_Ch -text "Ch"
-	label $f.l_Ph -text "Ph"
 	label $f.l_CG -text "CG"
+	label $f.l_Ph -text "Ph"
+	label $f.l_Ch -text "Ch"	
 	label $f.l_CH -text "c1"
 	label $f.l_CH3 -text "c3"
 	
@@ -347,6 +348,20 @@ proc soft_constraint_window {} {
 	label $f.l_tol_a -text "t"
 	label $f.l_tar_s -text "S"
 	label $f.l_tol_s -text "t"
+
+	entry $f.e_CG_0 -textvariable carbGlyc(target_c) -width $w
+	entry $f.e_CG_1 -textvariable carbGlyc(tol_c) -width $w
+	entry $f.e_CG_2 -textvariable carbGlyc(target_a) -width $w
+	entry $f.e_CG_3 -textvariable carbGlyc(tol_a) -width $w
+	entry $f.e_CG_4 -textvariable carbGlyc(target_s) -width $w
+	entry $f.e_CG_5 -textvariable carbGlyc(tol_s) -width $w
+	
+	entry $f.e_Ph_0 -textvariable phosphate(target_c) -width $w
+	entry $f.e_Ph_1 -textvariable phosphate(tol_c) -width $w
+	entry $f.e_Ph_2 -textvariable phosphate(target_a) -width $w
+	entry $f.e_Ph_3 -textvariable phosphate(tol_a) -width $w
+	entry $f.e_Ph_4 -textvariable phosphate(target_s) -width $w
+	entry $f.e_Ph_5 -textvariable phosphate(tol_s) -width $w
 	
 	entry $f.e_Ch_0 -textvariable choline(target_c) -width $w
 	entry $f.e_Ch_1 -textvariable choline(tol_c) -width $w
@@ -355,32 +370,18 @@ proc soft_constraint_window {} {
 	entry $f.e_Ch_4 -textvariable choline(target_s) -width $w
 	entry $f.e_Ch_5 -textvariable choline(tol_s) -width $w
 	
-	entry $f.e_Ph_0 -textvariable phosphate(target_c) -width $w
-	entry $f.e_Ph_1 -textvariable phosphate(target_a) -width $w
-	entry $f.e_Ph_2 -textvariable phosphate(target_s) -width $w
-	entry $f.e_Ph_3 -textvariable phosphate(tol_c) -width $w
-	entry $f.e_Ph_4 -textvariable phosphate(tol_a) -width $w
-	entry $f.e_Ph_5 -textvariable phosphate(tol_s) -width $w
-
-	entry $f.e_CG_0 -textvariable carbGlyc(target_c) -width $w
-	entry $f.e_CG_1 -textvariable carbGlyc(target_a) -width $w
-	entry $f.e_CG_2 -textvariable carbGlyc(target_s) -width $w
-	entry $f.e_CG_3 -textvariable carbGlyc(tol_c) -width $w
-	entry $f.e_CG_4 -textvariable carbGlyc(tol_a) -width $w
-	entry $f.e_CG_5 -textvariable carbGlyc(tol_s) -width $w
-
 	entry $f.e_CH_0 -textvariable methine(target_c) -width $w
-	entry $f.e_CH_1 -textvariable methine(target_a) -width $w
-	entry $f.e_CH_2 -textvariable methine(target_s) -width $w
-	entry $f.e_CH_3 -textvariable methine(tol_c) -width $w
-	entry $f.e_CH_4 -textvariable methine(tol_a) -width $w
+	entry $f.e_CH_1 -textvariable methine(tol_c) -width $w
+	entry $f.e_CH_2 -textvariable methine(target_a) -width $w
+	entry $f.e_CH_3 -textvariable methine(tol_a) -width $w
+	entry $f.e_CH_4 -textvariable methine(target_s) -width $w	
 	entry $f.e_CH_5 -textvariable methine(tol_s) -width $w
 
 	entry $f.e_CH3_0 -textvariable methyl(target_c) -width $w
-	entry $f.e_CH3_1 -textvariable methyl(target_a) -width $w
-	entry $f.e_CH3_2 -textvariable methyl(target_s) -width $w
-	entry $f.e_CH3_3 -textvariable methyl(tol_c) -width $w
-	entry $f.e_CH3_4 -textvariable methyl(tol_a) -width $w
+	entry $f.e_CH3_1 -textvariable methyl(tol_c) -width $w
+	entry $f.e_CH3_2 -textvariable methyl(target_a) -width $w
+	entry $f.e_CH3_3 -textvariable methyl(tol_a) -width $w
+	entry $f.e_CH3_4 -textvariable methyl(target_s) -width $w
 	entry $f.e_CH3_5 -textvariable methyl(tol_s) -width $w
 
   grid $f -column 0 -row 0
@@ -390,14 +391,15 @@ proc soft_constraint_window {} {
   grid $f.l_tol_a -column 0 -row 4
   grid $f.l_tar_s -column 0 -row 5
   grid $f.l_tol_s -column 0 -row 6
-  
-	grid $f.l_Ch -column 1 -row 0
-	grid $f.e_Ch_0 -column 1 -row 1
-	grid $f.e_Ch_1 -column 1 -row 2
-	grid $f.e_Ch_2 -column 1 -row 3
-	grid $f.e_Ch_3 -column 1 -row 4
-	grid $f.e_Ch_4 -column 1 -row 5
-	grid $f.e_Ch_5 -column 1 -row 6
+
+
+	grid $f.l_CG -column 3 -row 0
+	grid $f.e_CG_0 -column 3 -row 1
+	grid $f.e_CG_1 -column 3 -row 2
+	grid $f.e_CG_2 -column 3 -row 3
+	grid $f.e_CG_3 -column 3 -row 4
+	grid $f.e_CG_4 -column 3 -row 5
+	grid $f.e_CG_5 -column 3 -row 6
 	
 	grid $f.l_Ph -column 2 -row 0
 	grid $f.e_Ph_0 -column 2 -row 1
@@ -406,12 +408,28 @@ proc soft_constraint_window {} {
 	grid $f.e_Ph_3 -column 2 -row 4
 	grid $f.e_Ph_4 -column 2 -row 5
 	grid $f.e_Ph_5 -column 2 -row 6
-
-	grid $f.l_CG -column 3 -row 0
-	grid $f.e_CG_0 -column 3 -row 1
-	grid $f.e_CG_1 -column 3 -row 2
-	grid $f.e_CG_2 -column 3 -row 3
-	grid $f.e_CG_3 -column 3 -row 4
-	grid $f.e_CG_4 -column 3 -row 5
-	grid $f.e_CG_5 -column 3 -row 6  
+	  
+	grid $f.l_Ch -column 1 -row 0
+	grid $f.e_Ch_0 -column 1 -row 1
+	grid $f.e_Ch_1 -column 1 -row 2
+	grid $f.e_Ch_2 -column 1 -row 3
+	grid $f.e_Ch_3 -column 1 -row 4
+	grid $f.e_Ch_4 -column 1 -row 5
+	grid $f.e_Ch_5 -column 1 -row 6
+	
+	grid $f.l_CH -column 4 -row 0
+	grid $f.e_CH_0 -column 4 -row 1
+	grid $f.e_CH_1 -column 4 -row 2
+	grid $f.e_CH_2 -column 4 -row 3
+	grid $f.e_CH_3 -column 4 -row 4
+	grid $f.e_CH_4 -column 4 -row 5
+	grid $f.e_CH_5 -column 4 -row 6  	  
+	
+	grid $f.l_CH3 -column 5 -row 0
+	grid $f.e_CH3_0 -column 5 -row 1
+	grid $f.e_CH3_1 -column 5 -row 2
+	grid $f.e_CH3_2 -column 5 -row 3
+	grid $f.e_CH3_3 -column 5 -row 4
+	grid $f.e_CH3_4 -column 5 -row 5
+	grid $f.e_CH3_5 -column 5 -row 6  	
 }

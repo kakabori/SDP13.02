@@ -142,6 +142,41 @@ void linkvar(){
   Blt_CreateVector(interp, tmp, 2001, &ymw_EDP_v);
   strcpy(tmp, "ympep_EDP_v");
   Blt_CreateVector(interp, tmp, 2001, &ympep_EDP_v);
+  
+  Tcl_LinkVar(interp, "carbGlyc(target_c)", (char *)&(g2.carbGlyc.target_c), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "carbGlyc(target_a)", (char *)&(g2.carbGlyc.target_a), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "carbGlyc(target_s)", (char *)&(g2.carbGlyc.target_s), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "carbGlyc(tol_c)", (char *)&(g2.carbGlyc.tol_c), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "carbGlyc(tol_a)", (char *)&(g2.carbGlyc.tol_a), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "carbGlyc(tol_s)", (char *)&(g2.carbGlyc.tol_s), TCL_LINK_DOUBLE);
+  
+  Tcl_LinkVar(interp, "phosphate(target_c)", (char *)&(g2.phosphate.target_c), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "phosphate(target_a)", (char *)&(g2.phosphate.target_a), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "phosphate(target_s)", (char *)&(g2.phosphate.target_s), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "phosphate(tol_c)", (char *)&(g2.phosphate.tol_c), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "phosphate(tol_a)", (char *)&(g2.phosphate.tol_a), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "phosphate(tol_s)", (char *)&(g2.phosphate.tol_s), TCL_LINK_DOUBLE);
+
+  Tcl_LinkVar(interp, "choline(target_c)", (char *)&(g2.choline.target_c), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "choline(target_a)", (char *)&(g2.choline.target_a), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "choline(target_s)", (char *)&(g2.choline.target_s), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "choline(tol_c)", (char *)&(g2.choline.tol_c), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "choline(tol_a)", (char *)&(g2.choline.tol_a), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "choline(tol_s)", (char *)&(g2.choline.tol_s), TCL_LINK_DOUBLE);
+  
+  Tcl_LinkVar(interp, "methine(target_c)", (char *)&(g2.methine.target_c), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "methine(target_a)", (char *)&(g2.methine.target_a), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "methine(target_s)", (char *)&(g2.methine.target_s), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "methine(tol_c)", (char *)&(g2.methine.tol_c), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "methine(tol_a)", (char *)&(g2.methine.tol_a), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "methine(tol_s)", (char *)&(g2.methine.tol_s), TCL_LINK_DOUBLE);
+  
+  Tcl_LinkVar(interp, "methyl(target_c)", (char *)&(g2.methyl.target_c), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "methyl(target_a)", (char *)&(g2.methyl.target_a), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "methyl(target_s)", (char *)&(g2.methyl.target_s), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "methyl(tol_c)", (char *)&(g2.methyl.tol_c), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "methyl(tol_a)", (char *)&(g2.methyl.tol_a), TCL_LINK_DOUBLE);
+  Tcl_LinkVar(interp, "methyl(tol_s)", (char *)&(g2.methyl.tol_s), TCL_LINK_DOUBLE);
 }
 
 /* this updates the screen */
@@ -396,7 +431,14 @@ double penalty()
   if(g2.twiggl>0){tmp=(0.0-g2.wiggl)/g2.twiggl;pnty+=tmp*tmp;}
   //if(g2.tDBG>0){tmp=(g2.DB-g2.DBG)/g2.tDBG;pnty+=tmp*tmp;}
 
-  // Go through Gauss objects soft constraints
+  // Go through Gauss objects' soft constraints.
+  // First, update their parameters, which are center, ampl, and sigma.
+  g2.carbGlyc.set_params(g2.parCG[0], g2.parCG[1], g2.parCG[2]);
+  g2.phosphate.set_params(g2.parPh[0], g2.parPh[1], g2.parPh[2]);
+  g2.choline.set_params(g2.parCh[0], g2.parCh[1], g2.parCh[2]);
+  g2.methine.set_params(g2.parc1[0], g2.parc1[1], g2.parc1[2]);
+  g2.methyl.set_params(g2.parc3[0], g2.parc3[1], g2.parc3[2]);
+  // Now, collect the penalty values
   pnty += g2.get_penalty();
   
   return pnty;

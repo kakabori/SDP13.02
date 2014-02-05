@@ -470,6 +470,8 @@ pack $w -fill x
 label $w.am -text amoeba -pady 0 -relief raised -width 7
 label $w.ft -text Fourier -pady 0 -relief raised -width 7
 set repeat 10
+
+
 proc amb1 {} {
 	global repeat NMAX
 	.p.i.am configure -relief sunken -fg red
@@ -481,9 +483,13 @@ proc amb1 {} {
         calculateEDP
 	.p.i.am configure -relief raised -fg black
 }
+
+
 proc amb3 {} {
 	calcmodel; display
 }
+
+
 proc scalesim {samplist} {
 	scale2sim $samplist; display
 }
@@ -493,6 +499,8 @@ calcmodel
 display
 calculateEDP
 }
+
+
 proc ft {} {
 #	catch {.t.r element delete mg1}
 #	catch {.t.r element delete mg2}
@@ -502,6 +510,8 @@ proc ft {} {
 #	catch {.t.r element delete mgp}
 	calcFourier
 }
+
+
 bind $w.ft <1> { ft }
 pack $w.ft $w.am -side right
 
