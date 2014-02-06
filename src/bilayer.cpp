@@ -462,12 +462,20 @@ void updatecolor2(const char *widget, int k, const char *tail, const char *color
 /****************************************************************************** 
 return chisquare + penalty terms
 This is the function that gets minimized by the amoeba function.
+
+*pars: 1D array that holds the values of free parameters with which the current
+       function evaluation is being done.
 ******************************************************************************/
 double vec(double *pars)
 {  
-  int i,j;
-
-  for(i=0;i<rdim;i++) x[xindex[i]]=pars[i];
+  for (unsigned int i = 0; i < rdim; i++) {
+    // Transform internal variable to external one, then store in the x array.
+    // If bounds are not specified for an input parameter, int_to_ext returns 
+    // the input value.
+    x[xindex[i]] = int_to_ext(pars[i]);
+  }
+  
+  // Make sure the following parameters take on positive values.
   x[0]=fabs(x[0]);x[2]=fabs(x[2]);
   x[3]=fabs(x[3]);x[5]=fabs(x[5]);
   x[6]=fabs(x[6]);x[8]=fabs(x[8]);
@@ -475,12 +483,15 @@ double vec(double *pars)
   x[12]=fabs(x[12]);x[14]=fabs(x[14]);
   x[15]=fabs(x[15]);x[16]=fabs(x[16]);
 
+  // What is this?
   if (x[4]*x[5]==0) {x[3]=x[0];}
 
+  // Get the penalty due to soft constraints
   g2.penalty = penalty();
+  
   g2.basekN = 0, g2.basekX = 0;
   g2.rsdtN = 0, g2.rsdtX = 0;
-  for (j = 0; j < SNUM; j++) {
+  for (unsigned int j = 0; j < SNUM; j++) {
 	  if (sp[j].frmelm.status==0) continue;
   	if (sp[j].mode=='n') {
   	  g2.basekN+=basechi(j); 
@@ -586,6 +597,8 @@ int YF_amoeba(ClientData clientData, Tcl_Interp *interp, int objc,
   for (i = 0; i < rdim; i++) p[i][i] += tsx[i];
   
   for (j = 0; j < rdim; j++) tmpp[j] = x[xindex[j]];
+  
+  // Do the transformation
   
   // p:
   // y:
