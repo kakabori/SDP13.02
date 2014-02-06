@@ -1,14 +1,12 @@
 #ifndef GUARD_BILAYER_H
 #define GUARD_BILAYER_H
 
-int setNePep(ClientData clientData, Tcl_Interp *interp, 
-                int objc, Tcl_Obj *const objv[]);
-double amotry(double **p, double *y, double *psum, int ndim, 
-              double (*funk)(double *), int ihi, double fac);
-int amoeba(double **p, double *y, int ndim, double ftol, 
-           double (*funk)(double *));
-int MR_calculateEDP(ClientData clientData, Tcl_Interp *interp,
-                    int objc, Tcl_Obj *const objv[]);
+double int_to_ext(unsigned int, double);
+double ext_to_int(unsigned int, double);
+int setNePep(ClientData, Tcl_Interp *, int, Tcl_Obj *const objv[]);
+double amotry(double **p, double *y, double *psum, int ndim, double (*funk)(double *), int ihi, double fac);
+int amoeba(double **p, double *y, int ndim, double ftol, double (*funk)(double *));
+int MR_calculateEDP(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]);
 void after_fitting();
 double ran1(long *idum);
 double active_ctf(double);

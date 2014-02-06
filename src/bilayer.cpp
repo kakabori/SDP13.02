@@ -65,6 +65,13 @@ const char *rhograph[2] = {".t.rN", ".t.rX"};
 int activesp=0,constraint[2],loops=10,method=1,as_is=1,direct_err=0;
 int xpin[Tnum], xindex[Tnum],rdim;
 
+// Arrays for bound-constrained minimization. Linked to tcl arrays with 
+// the same names.
+bool hasLowerBound[Tnum];
+bool hasUpperBound[Tnum];
+double upperBounds[Tnum];
+double lowerBounds[Tnum];
+
 int anneal_iter=1000,usesign=/*0;NK=*/1,showsign=/*1;NK=*/0,aline_order=1,aline_on_model=0,redraw=1,init_normalize=0;
 int max_peak=2;
 int noscale=0;//1=don't scale; 0=scale
@@ -84,6 +91,23 @@ void linkvar(){
   Tcl_EvalEx(interp,varname,-1,TCL_EVAL_GLOBAL);
   sprintf(varname ,"set SNUM %d",SNUM);
   Tcl_EvalEx(interp,varname,-1,TCL_EVAL_GLOBAL);
+  
+  for (int i = 0; i < Tnum; i++) {
+    sprintf(varname, "upperBounds(%d)", i);
+    Tcl_LinkVar(interp, varname, (char *)&(upperBounds[i]), TCL_LINK_DOUBLE);
+  }
+  for (int i = 0; i < Tnum; i++) {
+    sprintf(varname, "lowerBounds(%d)", i);
+    Tcl_LinkVar(interp, varname, (char *)&(lowerBounds[i]), TCL_LINK_DOUBLE);
+  }
+  for (int i = 0; i < Tnum; i++) {
+    sprintf(varname, "hasLowerBound(%d)", i);
+    Tcl_LinkVar(interp, varname, (char *)&(hasLowerBound[i]), TCL_LINK_BOOLEAN);
+  }
+  for (int i = 0; i < Tnum; i++) {
+    sprintf(varname, "hasUpperBound(%d)", i);
+    Tcl_LinkVar(interp, varname, (char *)&(hasUpperBound[i]), TCL_LINK_BOOLEAN);
+  }
   for(i=0;i<Tnum;i++){
     sprintf(varname,"xpin(%d)",i);
     Tcl_LinkVar(interp,varname,(char *)&(xpin[i]), TCL_LINK_INT);
@@ -96,6 +120,7 @@ void linkvar(){
     sprintf(varname,"cnst(%d)",i);
     Tcl_LinkVar(interp,varname,(char *)&(constraint[i]), TCL_LINK_INT);
   }
+  
   Tcl_LinkVar(interp,"init_normalize",(char *)&init_normalize, TCL_LINK_INT);
   Tcl_LinkVar(interp,"loops",(char *)&loops, TCL_LINK_INT);
   Tcl_LinkVar(interp,"range",(char *)&range, TCL_LINK_DOUBLE);
@@ -472,7 +497,7 @@ double vec(double *pars)
     // Transform internal variable to external one, then store in the x array.
     // If bounds are not specified for an input parameter, int_to_ext returns 
     // the input value.
-    x[xindex[i]] = int_to_ext(pars[i]);
+    x[xindex[i]] = int_to_ext(xindex[i], pars[i]);
   }
   
   // Make sure the following parameters take on positive values.
@@ -554,11 +579,12 @@ int YF_spinfoN(ClientData clientData, Tcl_Interp *interp,int objc, Tcl_Obj *cons
 
 /******************************************************************************
 start the amoeba fitting driver
-Pnum:
-Tnum:
-xpin[i]:
-xindex[i]:
-x[i]:
+Pnum: 18
+Tnum: 70
+xpin: an array that tells whether a parameter is free or fixed.
+xindex: an array for the indices of free parameters
+x: an array for parameter values, linked to a tcl array named x. 
+   See also globalVariables.tcl for more details.
 sx[i]:
 ran1:
 idum:
@@ -576,15 +602,17 @@ int YF_amoeba(ClientData clientData, Tcl_Interp *interp, int objc,
     malloced = 1;
   }
 
+  // Get the indices for free parameters
   for (i = 0, rdim = 0; i < Tnum; i++) {
     if(xpin[i]) continue;
     xindex[rdim++] = i;
   }
 
+  // Initialize 2D array p, which determines the initial parameter values
   for (i = 0; i < rdim+1; i++) {
     for (j = 0; j < rdim; j++) p[i][j] = x[xindex[j]];
   }
-  
+  // What does this line do?
   for (i = 0; i < rdim; i++) tsx[i] = sx[xindex[i]];
   
   for(i = 1; i < rdim; i++) {
@@ -598,19 +626,25 @@ int YF_amoeba(ClientData clientData, Tcl_Interp *interp, int objc,
   
   for (j = 0; j < rdim; j++) tmpp[j] = x[xindex[j]];
   
-  // Do the transformation
+  // Transform external variables to internal ones
+  for (int i = 0; i < rdim+1; i++) {
+    for (int j = 0; j < rdim; j++) p[i][j] = ext_to_int(xindex[j], p[i][j]);
+  }
   
-  // p:
-  // y:
+  // p: initial values
+  // y: probably an array that gets used internally by amoeba
   // rdim: the number of free parameters
   // tolerance:
-  // vec:
+  // vec: the actual function that gets minimized
   if (amoeba(p, y, rdim, tolerance, vec) >= NMAX) {
+    // Looks like amoeba did not find the best fit in enough iteration, so
+    // put elements in x back to their original values
     for (j = 0; j < rdim; j++) x[xindex[j]] = tmpp[j];
 	  NMAX+=5000;
 	  return TCL_OK;
   } else {
-    for (j = 0; j < rdim; j++) x[xindex[j]] = p[0][j];
+    // Looks like p[0][j] contains the best fit values
+    for (j = 0; j < rdim; j++) x[xindex[j]] = int_to_ext(xindex[j], p[0][j]);
   }
 
   x[0]=fabs(x[0]);x[2]=fabs(x[2]);
@@ -1332,9 +1366,47 @@ int setNePep(ClientData clientData, Tcl_Interp *interp, int objc,
   return TCL_OK;
 }
 
-int MINUIT(ClientData clientData, Tcl_Interp *interp, int objc, 
-           Tcl_Obj *const objv[]) 
+// index n and internal value, val
+double int_to_ext(unsigned int n, double val)
 {
+  // Check whether bounds exist for n
+  if (hasLowerBound[n] || hasUpperBound[n]) {
+    double a, b;
+    if (hasLowerBound[n] && hasUpperBound[n]) {
+      a = lowerBounds[n];
+      b = upperBounds[n];
+      return a + (b-a)/2*(sin(val)+1);
+    } else if (hasLowerBound[n]) {
+      a = lowerBounds[n];
+      return a - 1 + sqrt(val*val+1);
+    } else if (hasUpperBound[n]) {
+      b = upperBounds[n];
+      return b + 1 - sqrt(val*val+1);
+    }
+  }
+  
+  return val;
+}
 
-  return TCL_OK;
+
+// index n and external value, val
+double ext_to_int(unsigned int n, double val)
+{
+  // Check whether a bound exists for n
+  if (hasLowerBound[n] || hasUpperBound[n]) {
+    double a, b;
+    if (hasLowerBound[n] && hasUpperBound[n]) {
+      a = lowerBounds[n];
+      b = upperBounds[n];
+      return asin(2*(val-a)/(b-a) - 1);
+    } else if (hasLowerBound[n]) {
+      a = lowerBounds[n];
+      return sqrt((val-a+1)*(val-a+1) - 1);
+    } else if (hasUpperBound[n]) {
+      b = upperBounds[n];
+      return sqrt((b-val+1)*(b-val+1) - 1);
+    }
+  }
+  
+  return val;
 }

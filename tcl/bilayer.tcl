@@ -671,5 +671,5 @@ foreach ext {15 22 23} {
 }
 
 #cd /mnt/E/work/chess04b
-source tcl/optionwin.tcl
 source tcl/globalVariables.tcl
+source tcl/optionwin.tcl
