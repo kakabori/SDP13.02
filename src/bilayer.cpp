@@ -540,43 +540,64 @@ int YF_spinfoN(ClientData clientData, Tcl_Interp *interp,int objc, Tcl_Obj *cons
   return TCL_OK;
 }
 
-int YF_amoeba(ClientData clientData, Tcl_Interp *interp,int objc, Tcl_Obj *const objv[]) {
-  // start the amoeba fitting driver
-  static double *p[Pnum+1],tmpp[Pnum+1],y[Pnum+1];
-  double tsx[Pnum],tta,tmp;
-  int i,j;
-  static char malloced=0;
-  if(!malloced){
-    for(i=0;i<Pnum+1;i++) p[i]=(double *)malloc(sizeof(double)*Pnum);
-    malloced=1;
+
+/******************************************************************************
+start the amoeba fitting driver
+Pnum:
+Tnum:
+xpin[i]:
+xindex[i]:
+x[i]:
+sx[i]:
+ran1:
+idum:
+******************************************************************************/
+int YF_amoeba(ClientData clientData, Tcl_Interp *interp, int objc, 
+              Tcl_Obj *const objv[]) 
+{
+  static double *p[Pnum+1], tmpp[Pnum+1], y[Pnum+1];
+  double tsx[Pnum], tta, tmp;
+  int i, j;
+  static char malloced = 0;
+  
+  if (!malloced) {
+    for (i = 0; i < Pnum + 1; i++) p[i] = (double *)malloc(sizeof(double)*Pnum);
+    malloced = 1;
   }
 
-  for(i=0,rdim=0;i<Tnum;i++){
+  for (i = 0, rdim = 0; i < Tnum; i++) {
     if(xpin[i]) continue;
-    xindex[rdim++]=i;
-
+    xindex[rdim++] = i;
   }
 
-	
-  for(i=0;i<rdim+1;i++){
-    for(j=0;j<rdim;j++) p[i][j]=x[xindex[j]];
+  for (i = 0; i < rdim+1; i++) {
+    for (j = 0; j < rdim; j++) p[i][j] = x[xindex[j]];
   }
-  for(i=0;i<rdim;i++)	tsx[i]=sx[xindex[i]];
-  for(i=1;i<rdim;i++){
-    tta=ran1(&idum)*2*PI;
-    tmp=tsx[i-1]*cos(tta)-tsx[i]*sin(tta);
-    tsx[i]=tsx[i-1]*sin(tta)+tsx[i]*cos(tta);
-    tsx[i-1]=tmp;
+  
+  for (i = 0; i < rdim; i++) tsx[i] = sx[xindex[i]];
+  
+  for(i = 1; i < rdim; i++) {
+    tta = ran1(&idum) * 2 * PI;
+    tmp = tsx[i-1]*cos(tta) - tsx[i]*sin(tta);
+    tsx[i] = tsx[i-1]*sin(tta) + tsx[i]*cos(tta);
+    tsx[i-1] = tmp;
   }
-  for(i=0;i<rdim;i++)	p[i][i]+=tsx[i];
-  for(j=0;j<rdim;j++) tmpp[j]=x[xindex[j]];
-  if (amoeba(p,y,rdim,tolerance,vec)>=NMAX) {
-      for(j=0;j<rdim;j++) x[xindex[j]]=tmpp[j];
+  
+  for (i = 0; i < rdim; i++) p[i][i] += tsx[i];
+  
+  for (j = 0; j < rdim; j++) tmpp[j] = x[xindex[j]];
+  
+  // p:
+  // y:
+  // rdim: the number of free parameters
+  // tolerance:
+  // vec:
+  if (amoeba(p, y, rdim, tolerance, vec) >= NMAX) {
+    for (j = 0; j < rdim; j++) x[xindex[j]] = tmpp[j];
 	  NMAX+=5000;
-
 	  return TCL_OK;
   } else {
-      for(j=0;j<rdim;j++) x[xindex[j]]=p[0][j];
+    for (j = 0; j < rdim; j++) x[xindex[j]] = p[0][j];
   }
 
   x[0]=fabs(x[0]);x[2]=fabs(x[2]);
@@ -1295,5 +1316,12 @@ int setNePep(ClientData clientData, Tcl_Interp *interp, int objc,
       sp[j].eCh = 0;
     }
   }
+  return TCL_OK;
+}
+
+int MINUIT(ClientData clientData, Tcl_Interp *interp, int objc, 
+           Tcl_Obj *const objv[]) 
+{
+
   return TCL_OK;
 }
