@@ -323,113 +323,141 @@ proc go {direc} {
 
 
 ###############################################################################
-# Set up a window for additional soft constraints
+# Set up a window for additional soft constraints and upper/lower bounds
 ###############################################################################
-proc soft_constraint_window {} {
+proc constraints_window {} {
 	global choline phosphate carbGlyc methine methyl
 	
 	# The width of entry fields
 	set w 7 
 	
-	toplevel .sfcnst
-	wm title .sfcnst "Additional Soft Constraints"
+	toplevel .c
+	wm title .c "Additional Soft Constraints"
+	set f [ frame .c.f]
+	
+	label $f.l_1 -text "target\nvalue"
+	label $f.l_2 -text "tolerance"
+	label $f.l_3 -text "lower\nbound"
+	label $f.l_4 -text "upper\nbound"
+	label $f.l_5 -text "lower\nbound on"
+	label $f.l_6 -text "upper\nbound on"
+	
+  set n XCG
+  label $f.l_${n}_0 -text "XCG"
+	entry $f.e_${n}_1 -textvariable carbGlyc(target_c) -width $w
+	entry $f.e_${n}_2 -textvariable carbGlyc(tol_c) -width $w
+	entry $f.e_${n}_3 -textvariable lowerBounds(0) -width $w
+	entry $f.e_${n}_4 -textvariable upperBounds(0) -width $w 
+	checkbutton $f.c_${n}_5 -variable hasLowerBound(0) -width $w
+	checkbutton $f.c_${n}_6 -variable hasUpperBound(0) -width $w
+	
+	set n SCG
+	label $f.l_${n}_0 -text "SCG"
+	entry $f.e_${n}_1 -textvariable carbGlyc(target_s) -width $w
+	entry $f.e_SCG_2 -textvariable carbGlyc(tol_s) -width $w
+	entry $f.e_SCG_3 -textvariable lowerBounds(2) -width $w 
+	entry $f.e_SCG_4 -textvariable upperBounds(2) -width $w
+  checkbutton $f.c_${n}_5 -variable hasLowerBound(2) -width $w
+	checkbutton $f.c_${n}_6 -variable hasUpperBound(2) -width $w	
+	
+	set n XPh
+	set i 3
+	label $f.l_XPh_0 -text "XPh"
+	entry $f.e_XPh_1 -textvariable phosphate(target_c) -width $w
+	entry $f.e_XPh_2 -textvariable phosphate(tol_c) -width $w	
+	entry $f.e_XPh_3 -textvariable lowerBounds(3) -width $w 
+	entry $f.e_XPh_4 -textvariable upperBounds(3) -width $w
+  checkbutton $f.c_${n}_5 -variable hasLowerBound($i) -width $w
+	checkbutton $f.c_${n}_6 -variable hasUpperBound($i) -width $w		
+	
+	set n SPh
+	set i 5
+	label $f.l_SPh_0 -text "SPh"
+	entry $f.e_SPh_1 -textvariable phosphate(target_s) -width $w
+	entry $f.e_SPh_2 -textvariable phosphate(tol_s) -width $w	
+	entry $f.e_SPh_3 -textvariable lowerBounds(5) -width $w 
+	entry $f.e_SPh_4 -textvariable upperBounds(5) -width $w
+  checkbutton $f.c_${n}_5 -variable hasLowerBound($i) -width $w
+	checkbutton $f.c_${n}_6 -variable hasUpperBound($i) -width $w		
 
-	set f [ frame .sfcnst.f]
-	
-	label $f.l_CG -text "CG"
-	label $f.l_Ph -text "Ph"
-	label $f.l_Ch -text "Ch"	
-	label $f.l_CH -text "c1"
-	label $f.l_CH3 -text "c3"
-	
-	label $f.l_tar_c -text "X"
-	label $f.l_tol_c -text "t"
-	label $f.l_tar_a -text "C"
-	label $f.l_tol_a -text "t"
-	label $f.l_tar_s -text "S"
-	label $f.l_tol_s -text "t"
+	set n XCh
+	set i 6
+	label $f.l_XCh_0 -text "XCh"	
+	entry $f.e_XCh_1 -textvariable choline(target_c) -width $w
+	entry $f.e_XCh_2 -textvariable choline(tol_c) -width $w
+	entry $f.e_XCh_3 -textvariable lowerBounds(6) -width $w
+	entry $f.e_XCh_4 -textvariable upperBounds(6) -width $w
+  checkbutton $f.c_${n}_5 -variable hasLowerBound($i) -width $w
+	checkbutton $f.c_${n}_6 -variable hasUpperBound($i) -width $w			
 
-	entry $f.e_CG_0 -textvariable carbGlyc(target_c) -width $w
-	entry $f.e_CG_1 -textvariable carbGlyc(tol_c) -width $w
-	entry $f.e_CG_2 -textvariable carbGlyc(target_a) -width $w
-	entry $f.e_CG_3 -textvariable carbGlyc(tol_a) -width $w
-	entry $f.e_CG_4 -textvariable carbGlyc(target_s) -width $w
-	entry $f.e_CG_5 -textvariable carbGlyc(tol_s) -width $w
+	set n SCh
+	set i 8
+	label $f.l_SCh_0 -text "SCh"	
+	entry $f.e_SCh_1 -textvariable choline(target_s) -width $w
+	entry $f.e_SCh_2 -textvariable choline(tol_s) -width $w
+	entry $f.e_SCh_3 -textvariable lowerBounds(8) -width $w 
+	entry $f.e_SCh_4 -textvariable upperBounds(8) -width $w	
+  checkbutton $f.c_${n}_5 -variable hasLowerBound($i) -width $w
+	checkbutton $f.c_${n}_6 -variable hasUpperBound($i) -width $w
 	
-	entry $f.e_Ph_0 -textvariable phosphate(target_c) -width $w
-	entry $f.e_Ph_1 -textvariable phosphate(tol_c) -width $w
-	entry $f.e_Ph_2 -textvariable phosphate(target_a) -width $w
-	entry $f.e_Ph_3 -textvariable phosphate(tol_a) -width $w
-	entry $f.e_Ph_4 -textvariable phosphate(target_s) -width $w
-	entry $f.e_Ph_5 -textvariable phosphate(tol_s) -width $w
-	
-	entry $f.e_Ch_0 -textvariable choline(target_c) -width $w
-	entry $f.e_Ch_1 -textvariable choline(tol_c) -width $w
-	entry $f.e_Ch_2 -textvariable choline(target_a) -width $w
-	entry $f.e_Ch_3 -textvariable choline(tol_a) -width $w
-	entry $f.e_Ch_4 -textvariable choline(target_s) -width $w
-	entry $f.e_Ch_5 -textvariable choline(tol_s) -width $w
-	
-	entry $f.e_CH_0 -textvariable methine(target_c) -width $w
-	entry $f.e_CH_1 -textvariable methine(tol_c) -width $w
-	entry $f.e_CH_2 -textvariable methine(target_a) -width $w
-	entry $f.e_CH_3 -textvariable methine(tol_a) -width $w
-	entry $f.e_CH_4 -textvariable methine(target_s) -width $w	
-	entry $f.e_CH_5 -textvariable methine(tol_s) -width $w
+	set n Xc1
+	set i 12		
+	label $f.l_Xc1_0 -text "Xc1"	
+	entry $f.e_Xc1_1 -textvariable methine(target_c) -width $w
+	entry $f.e_Xc1_2 -textvariable methine(tol_c) -width $w
+	entry $f.e_Xc1_3 -textvariable lowerBounds(12) -width $w 
+	entry $f.e_Xc1_4 -textvariable upperBounds(12) -width $w 
+  checkbutton $f.c_${n}_5 -variable hasLowerBound($i) -width $w
+	checkbutton $f.c_${n}_6 -variable hasUpperBound($i) -width $w
 
-	entry $f.e_CH3_0 -textvariable methyl(target_c) -width $w
-	entry $f.e_CH3_1 -textvariable methyl(tol_c) -width $w
-	entry $f.e_CH3_2 -textvariable methyl(target_a) -width $w
-	entry $f.e_CH3_3 -textvariable methyl(tol_a) -width $w
-	entry $f.e_CH3_4 -textvariable methyl(target_s) -width $w
-	entry $f.e_CH3_5 -textvariable methyl(tol_s) -width $w
+	set n Sc1
+	set i 14
+	label $f.l_Sc1_0 -text "Sc1"
+	entry $f.e_Sc1_1 -textvariable methine(target_s) -width $w	
+	entry $f.e_Sc1_2 -textvariable methine(tol_s) -width $w
+	entry $f.e_Sc1_3 -textvariable lowerBounds(14) -width $w 
+	entry $f.e_Sc1_4 -textvariable upperBounds(14) -width $w
+  checkbutton $f.c_${n}_5 -variable hasLowerBound($i) -width $w
+	checkbutton $f.c_${n}_6 -variable hasUpperBound($i) -width $w 
 
-  grid $f -column 0 -row 0
-  grid $f.l_tar_c -column 0 -row 1 
-  grid $f.l_tol_c -column 0 -row 2 
-  grid $f.l_tar_a -column 0 -row 3
-  grid $f.l_tol_a -column 0 -row 4
-  grid $f.l_tar_s -column 0 -row 5
-  grid $f.l_tol_s -column 0 -row 6
+	set n Xc3
+	set i 15
+	label $f.l_Xc3_0 -text "Xc3"
+	entry $f.e_Xc3_1 -textvariable methyl(target_c) -width $w
+	entry $f.e_Xc3_2 -textvariable methyl(tol_c) -width $w
+	entry $f.e_Xc3_3 -textvariable lowerBounds(15) -width $w
+	entry $f.e_Xc3_4 -textvariable upperBounds(15) -width $w		
+  checkbutton $f.c_${n}_5 -variable hasLowerBound($i) -width $w
+	checkbutton $f.c_${n}_6 -variable hasUpperBound($i) -width $w
 
+	set n Sc3
+	set i 17
+	label $f.l_Sc3_0 -text "Sc3"
+	entry $f.e_Sc3_1 -textvariable methyl(target_s) -width $w
+	entry $f.e_Sc3_2 -textvariable methyl(tol_s) -width $w
+	entry $f.e_Sc3_3 -textvariable lowerBounds(17) -width $w
+	entry $f.e_Sc3_4 -textvariable upperBounds(17) -width $w
+  checkbutton $f.c_${n}_5 -variable hasLowerBound($i) -width $w
+	checkbutton $f.c_${n}_6 -variable hasUpperBound($i) -width $w
 
-	grid $f.l_CG -column 3 -row 0
-	grid $f.e_CG_0 -column 3 -row 1
-	grid $f.e_CG_1 -column 3 -row 2
-	grid $f.e_CG_2 -column 3 -row 3
-	grid $f.e_CG_3 -column 3 -row 4
-	grid $f.e_CG_4 -column 3 -row 5
-	grid $f.e_CG_5 -column 3 -row 6
+	grid $f -column 0 -row 0
 	
-	grid $f.l_Ph -column 2 -row 0
-	grid $f.e_Ph_0 -column 2 -row 1
-	grid $f.e_Ph_1 -column 2 -row 2
-	grid $f.e_Ph_2 -column 2 -row 3
-	grid $f.e_Ph_3 -column 2 -row 4
-	grid $f.e_Ph_4 -column 2 -row 5
-	grid $f.e_Ph_5 -column 2 -row 6
-	  
-	grid $f.l_Ch -column 1 -row 0
-	grid $f.e_Ch_0 -column 1 -row 1
-	grid $f.e_Ch_1 -column 1 -row 2
-	grid $f.e_Ch_2 -column 1 -row 3
-	grid $f.e_Ch_3 -column 1 -row 4
-	grid $f.e_Ch_4 -column 1 -row 5
-	grid $f.e_Ch_5 -column 1 -row 6
-	
-	grid $f.l_CH -column 4 -row 0
-	grid $f.e_CH_0 -column 4 -row 1
-	grid $f.e_CH_1 -column 4 -row 2
-	grid $f.e_CH_2 -column 4 -row 3
-	grid $f.e_CH_3 -column 4 -row 4
-	grid $f.e_CH_4 -column 4 -row 5
-	grid $f.e_CH_5 -column 4 -row 6  	  
-	
-	grid $f.l_CH3 -column 5 -row 0
-	grid $f.e_CH3_0 -column 5 -row 1
-	grid $f.e_CH3_1 -column 5 -row 2
-	grid $f.e_CH3_2 -column 5 -row 3
-	grid $f.e_CH3_3 -column 5 -row 4
-	grid $f.e_CH3_4 -column 5 -row 5
-	grid $f.e_CH3_5 -column 5 -row 6  	
+	grid $f.l_1 -column 1 -row 0
+	grid $f.l_2 -column 2 -row 0
+	grid $f.l_3 -column 3 -row 0
+	grid $f.l_4 -column 4 -row 0
+	grid $f.l_5 -column 5 -row 0
+	grid $f.l_6 -column 6 -row 0
+  
+  set i 1
+  foreach name {XCG SCG XPh SPh XCh SCh Xc1 Sc1 Xc3 Sc3} {
+    grid $f.l_${name}_0 -column 0 -row $i
+    for {set j 1} {$j < 5} {incr j} {
+	    grid $f.e_${name}_$j -column $j -row $i
+    }
+    grid $f.c_${name}_5 -column 5 -row $i
+    grid $f.c_${name}_6 -column 6 -row $i
+    incr i
+  }
+  
 }

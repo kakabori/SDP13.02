@@ -199,7 +199,7 @@ menu $m -tearoff 0
 $m add command -label "export" -command {export all [file rootname $smpfilename]}
 $m add command -label "peptide" -command {pepOptWin}
 $m add command -label "randomization" -command {randOptWin}
-$m add command -label "additional constraints" -command {soft_constraint_window}
+$m add command -label "additional constraints" -command {constraints_window}
 
 set m $w.opt.m
 menubutton $w.opt -text Opt -menu $m
@@ -339,7 +339,6 @@ set pname(14) Sc1
 set pname(15) Xc3
 set pname(16) Cc3
 set pname(17) Sc3
-
 set pname(18) r
 set pname(19) r12
 set pname(20) RCG
@@ -483,7 +482,6 @@ proc amb1 {} {
         calculateEDP
 	.p.i.am configure -relief raised -fg black
 }
-
 
 proc amb3 {} {
 	calcmodel; display
@@ -670,6 +668,6 @@ foreach ext {15 22 23} {
     pin $ext .p.s.1.l$ext
 }
 
-#cd /mnt/E/work/chess04b
+
 source tcl/globalVariables.tcl
 source tcl/optionwin.tcl

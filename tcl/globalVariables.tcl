@@ -13,7 +13,7 @@
 
 array set upperBounds {}
 array set lowerBounds {}
-for {set i 0} {$i < $Tnum} {
+for {set i 0} {$i < $Tnum} {incr i} {
   set hasLowerBound($i) false
   set hasUpperBound($i) false
 }
@@ -44,3 +44,4 @@ array set methyl {
   tol_a -1
   tol_s -1
 }
+
