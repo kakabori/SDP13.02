@@ -83,27 +83,32 @@ proc export2g {filename} {
 #	puts $fid "# DW            =[expr $x(25)-2.0*($x(21)+$x(24))/$x(32)]"
 #	puts $fid "# nW*Vw         =[expr ($x(32)*$x(25)/2.0-$x(21)-$x(24))]"
 	puts $fid "# fract(2,0,1)  =$fract(2),	$fract(0),	$fract(1)"
-	puts $fid "set max_peak $max_peak"
+  puts $fid "set max_peak $max_peak"
 	puts $fid "set chifactorN $chifactorN"
 	for {set i 0} {$i<$SNUM} {incr i} {
 		if {$status($i)==1} {puts $fid "active $i"}
 	}
+	
+	# Save the x array, which holds the values of model parameters
 	for {set i 0} {$i<$Tnum} {incr i} {
 		puts $fid "set x($i) $x($i); [expr $xpin($i)?"fix":"free"] $i"
 	}
-	# Save the additional soft constraints; see optionwin.tcl
-	foreach name {carbGlyc phosphate choline methine methyl} {
+
+  # Save the additional soft constraints; see optionwin.tcl
+  foreach name {carbGlyc phosphate choline methine methyl} {
 	  foreach i {target_c target_s tol_c tol_s} {
 	    puts $fid "set $name($i) ${$name($i)}"
 	  }
 	}
-	# Save the elements of bound-related arrays; see optionwin.tcl
-	foreach name {lowerBounds upperBounds hasLowerBound hasUpperBound} {
+	
+  # Save the elements of bound-related arrays; see optionwin.tcl
+  foreach name {lowerBounds upperBounds hasLowerBound hasUpperBound} {
 	  # These are the indices of parameters with bound constraints
 	  foreach i {0 2 3 5 6 8 12 14 15 17} {
 	    puts $fid "set $name($i) ${$name($i)}
 	  }
 	}
+	
 	close $fid
 }
 
