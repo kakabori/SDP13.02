@@ -36,8 +36,12 @@ proc deleteall {} {
 		}
 	}
 }	
+
+
 proc export2g {filename} {
 	global x smpfilename fract Tnum chifactorN DBgibbs xpin SNUM status max_peak
+  global choline phosphate carbGlyc methine methyl
+	global lowerBounds upperBounds hasLowerBound hasUpperBound
 	set fid [open $filename w]
 	puts $fid "# [clock format [clock second]]"
 	puts $fid "# smp_filename: $smpfilename"
@@ -87,8 +91,23 @@ proc export2g {filename} {
 	for {set i 0} {$i<$Tnum} {incr i} {
 		puts $fid "set x($i) $x($i); [expr $xpin($i)?"fix":"free"] $i"
 	}
+	# Save the additional soft constraints; see optionwin.tcl
+	foreach name {carbGlyc phosphate choline methine methyl} {
+	  foreach i {target_c target_s tol_c tol_s} {
+	    puts $fid "set $name($i) ${$name($i)}"
+	  }
+	}
+	# Save the elements of bound-related arrays; see optionwin.tcl
+	foreach name {lowerBounds upperBounds hasLowerBound hasUpperBound} {
+	  # These are the indices of parameters with bound constraints
+	  foreach i {0 2 3 5 6 8 12 14 15 17} {
+	    puts $fid "set $name($i) ${$name($i)}
+	  }
+	}
 	close $fid
 }
+
+
 proc active {num} {
 	global status listw
 	if {[winfo exists $listw.$num]} {
