@@ -102,11 +102,11 @@ void linkvar(){
   }
   for (int i = 0; i < Tnum; i++) {
     sprintf(varname, "hasLowerBound(%d)", i);
-    Tcl_LinkVar(interp, varname, (char *)&(hasLowerBound[i]), TCL_LINK_BOOLEAN);
+    Tcl_LinkVar(interp, varname, (char *)&(hasLowerBound[i]), TCL_LINK_INT);
   }
   for (int i = 0; i < Tnum; i++) {
     sprintf(varname, "hasUpperBound(%d)", i);
-    Tcl_LinkVar(interp, varname, (char *)&(hasUpperBound[i]), TCL_LINK_BOOLEAN);
+    Tcl_LinkVar(interp, varname, (char *)&(hasUpperBound[i]), TCL_LINK_INT);
   }
   for(i=0;i<Tnum;i++){
     sprintf(varname,"xpin(%d)",i);
