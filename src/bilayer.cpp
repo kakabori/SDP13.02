@@ -1357,10 +1357,10 @@ int setNePep(ClientData clientData, Tcl_Interp *interp, int objc,
     cout << "sp[" << j << "]" << ": status = 1" << endl;
     if (head == 1) {
       sp[j].eCh = NePep;
-      sp[j].ec1 = 0;
+      //sp[j].ec1 = 0;
     } else {
       sp[j].ec1 = NePep;
-      sp[j].eCh = 0;
+      //sp[j].eCh = 0;
     }
   }
   return TCL_OK;

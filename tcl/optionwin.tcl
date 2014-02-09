@@ -327,6 +327,7 @@ proc go {direc} {
 ###############################################################################
 proc constraints_window {} {
 	global choline phosphate carbGlyc methine methyl
+	global lowerBounds upperBounds hasLowerBound hasUpperBound
 	
 	# The width of entry fields
 	set w 7 
