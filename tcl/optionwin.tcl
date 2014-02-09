@@ -357,8 +357,8 @@ proc constraints_window {} {
 	entry $f.e_SCG_2 -textvariable carbGlyc(tol_s) -width $w
 	entry $f.e_SCG_3 -textvariable lowerBounds(2) -width $w 
 	entry $f.e_SCG_4 -textvariable upperBounds(2) -width $w
-  checkbutton $f.c_${n}_5 -variable hasLowerBound(2) -width $w
-	checkbutton $f.c_${n}_6 -variable hasUpperBound(2) -width $w	
+  checkbutton $f.c_SCG_5 -variable hasLowerBound(2) -width $w
+	checkbutton $f.c_SCG_6 -variable hasUpperBound(2) -width $w	
 	
 	set n XPh
 	set i 3
@@ -455,6 +455,7 @@ proc constraints_window {} {
     for {set j 1} {$j < 5} {incr j} {
 	    grid $f.e_${name}_$j -column $j -row $i
     }
+    puts $name
     grid $f.c_${name}_5 -column 5 -row $i
     grid $f.c_${name}_6 -column 6 -row $i
     incr i

@@ -67,8 +67,8 @@ int xpin[Tnum], xindex[Tnum],rdim;
 
 // Arrays for bound-constrained minimization. Linked to tcl arrays with 
 // the same names.
-bool hasLowerBound[Tnum];
-bool hasUpperBound[Tnum];
+int hasLowerBound[Tnum];
+int hasUpperBound[Tnum];
 double upperBounds[Tnum];
 double lowerBounds[Tnum];
 
@@ -86,7 +86,7 @@ int NMAX=5000;
 /* link tcl variables with C variables */
 void linkvar(){
   char varname[64];
-  int i;
+
   sprintf(varname ,"set Tnum %d",Tnum);
   Tcl_EvalEx(interp,varname,-1,TCL_EVAL_GLOBAL);
   sprintf(varname ,"set SNUM %d",SNUM);
@@ -102,12 +102,13 @@ void linkvar(){
   }
   for (int i = 0; i < Tnum; i++) {
     sprintf(varname, "hasLowerBound(%d)", i);
-    Tcl_LinkVar(interp, varname, (char *)&(hasLowerBound[i]), TCL_LINK_BOOLEAN);
+    Tcl_LinkVar(interp, varname, (char *)&(hasLowerBound[i]), TCL_LINK_INT);
   }
   for (int i = 0; i < Tnum; i++) {
     sprintf(varname, "hasUpperBound(%d)", i);
-    Tcl_LinkVar(interp, varname, (char *)&(hasUpperBound[i]), TCL_LINK_BOOLEAN);
+    Tcl_LinkVar(interp, varname, (char *)&(hasUpperBound[i]), TCL_LINK_INT);
   }
+  int i;
   for(i=0;i<Tnum;i++){
     sprintf(varname,"xpin(%d)",i);
     Tcl_LinkVar(interp,varname,(char *)&(xpin[i]), TCL_LINK_INT);
@@ -609,11 +610,13 @@ int YF_amoeba(ClientData clientData, Tcl_Interp *interp, int objc,
   }
 
   // Initialize 2D array p, which determines the initial parameter values
+  // Transform external variables to internal ones
   for (i = 0; i < rdim+1; i++) {
-    for (j = 0; j < rdim; j++) p[i][j] = x[xindex[j]];
+    for (j = 0; j < rdim; j++) p[i][j] = ext_to_int(xindex[j], x[xindex[j]]);
   }
   // What does this line do?
-  for (i = 0; i < rdim; i++) tsx[i] = sx[xindex[i]];
+  // Transform external variables to internal ones
+  for (i = 0; i < rdim; i++) tsx[i] = ext_to_int(xindex[i], sx[xindex[i]]);
   
   for(i = 1; i < rdim; i++) {
     tta = ran1(&idum) * 2 * PI;
@@ -626,10 +629,6 @@ int YF_amoeba(ClientData clientData, Tcl_Interp *interp, int objc,
   
   for (j = 0; j < rdim; j++) tmpp[j] = x[xindex[j]];
   
-  // Transform external variables to internal ones
-  for (int i = 0; i < rdim+1; i++) {
-    for (int j = 0; j < rdim; j++) p[i][j] = ext_to_int(xindex[j], p[i][j]);
-  }
   
   // p: initial values
   // y: probably an array that gets used internally by amoeba
@@ -1398,12 +1397,18 @@ double ext_to_int(unsigned int n, double val)
     if (hasLowerBound[n] && hasUpperBound[n]) {
       a = lowerBounds[n];
       b = upperBounds[n];
+      // If the internal variable is smaller or greater than lower or upper
+      // bound, respectively, reset the value so that it is within the bounds.
+      val = val < a? a: val;
+      val = val > b? b: val; 
       return asin(2*(val-a)/(b-a) - 1);
     } else if (hasLowerBound[n]) {
       a = lowerBounds[n];
+      val = val < a? a: val;
       return sqrt((val-a+1)*(val-a+1) - 1);
     } else if (hasUpperBound[n]) {
       b = upperBounds[n];
+      val = val > b? b: val;
       return sqrt((b-val+1)*(b-val+1) - 1);
     }
   }

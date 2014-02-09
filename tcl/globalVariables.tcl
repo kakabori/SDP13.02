@@ -14,8 +14,8 @@
 array set upperBounds {}
 array set lowerBounds {}
 for {set i 0} {$i < $Tnum} {incr i} {
-  set hasLowerBound($i) false
-  set hasUpperBound($i) false
+  set hasLowerBound($i) 0
+  set hasUpperBound($i) 0
 }
 
 array set carbGlyc "target_c 14 target_a 1 target_s 3 tol_c -1 tol_a -1 tol_s -1"
