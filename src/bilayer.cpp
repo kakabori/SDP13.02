@@ -837,6 +837,7 @@ int MR_calculateEDP(ClientData clientData, Tcl_Interp *interp,int objc, Tcl_Obj 
 
 		ympep_EDP[i]=(sp[j].epep/g2.Vpep)*(ppep[i]);
 		ymw_EDP[i]=pw[i]*(0.333);
+		//ymw_EDP[i]=pw[i]*(0.336);
 	}
     // Transfer to Blt vector format
     Blt_ResetVector(ymCG_EDP_v,ymCG_EDP, nv, nv, TCL_VOLATILE);
