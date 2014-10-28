@@ -13,9 +13,9 @@ set NePep 21.487
 proc pepOptWin {} {
 	global head Xpep Cpep Spep Vpep Vlipid VCG VPh VMe NePep
 	
-	toplevel .c
-	wm title .c "Peptide Gaussian"
-	set f [ frame .c.f ]
+	toplevel .d
+	wm title .d "Peptide Gaussian"
+	set f [ frame .d.f ]
 	grid $f -column 0 -row 0
 
 	label $f.head -text "peptide in head region (uncheck if in tail region)"
@@ -325,7 +325,7 @@ proc constraints_window {} {
 	frame $f.f_2 -width 20
 	
 	label $f.l_left -text "soft constraint\nparameters"
-	label $f.l_right -text "upper/lower bound parameters"
+	label $f.l_right -text "upper/lower bounds\n(check the box(es) to enable)"
 	
 	# Set up labels
 	label $f.l_1 -text "target\nvalue"

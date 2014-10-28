@@ -150,7 +150,7 @@ menubutton $w.tls -text Tool -menu $m
 menu $m -tearoff 0
 $m add command -label "export" -command {export all [file rootname $smpfilename]}
 $m add command -label "peptide" -command {pepOptWin}
-$m add command -label "randomization" -command {randOptWin}
+#$m add command -label "randomization" -command {randOptWin}
 $m add command -label "additional constraints" -command {constraints_window}
 
 set m $w.opt.m
