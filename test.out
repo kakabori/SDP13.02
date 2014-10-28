@@ -1,0 +1,178 @@
+# Sun Feb 09 06:58:56 PM EST 2014
+# smp_filename: /home/unkokusei/prog/SDP13.02/test.smp
+# MSD=-0.000000 X2=0.000000 X2red=-0.000000 PT2=0.000000 PX2tot=0.000000 N=0 v=0 c=0
+# MSDfractX= -nan X2fractX= -nan
+# MSDfractN= -nan X2fractN= -nan
+# A             =0.0
+# CG(X,C,S)	   =0.0,	0.0,	0.0
+# Ph            =0.0,	0.0,	0.0
+# Ch            =0.0,	0.0,	0.0
+# hydroCarbon   =0.0,	0.0,	0.0
+# SigmaC        =0.0,	0.0,	0.0
+# DoubleBond    =0.0,	0.0,	0.0
+# Methyl        =0.0,	0.0,	0.0
+# r(r,t,sr)     =0.0,	0.0,	0.0
+# r12(r,t,sr)   =0.0,	0.0,	0.0
+# RCG(R,t,sR)   =0.0,	0.0,	0.0
+# RPh(R,t,sR)   =0.0,	0.0,	0.0
+# Rm		   =0.0
+# sigR		   =0.0
+# n(C2,C1,C3)   =0.0,	0.0,	1.0
+# V(C2,C1,C3)   =0.0,	0.0,	0.0
+# VL		   =0.0
+# VHL=VHR       =0.0
+# VCG           =0.0
+# VPh, VCh      =0.0,	0.0
+# VH=VHL+VHpep  =0.0
+# Vpep          =0.0
+# D             =0.0
+# DPP           =0.0
+# DB            =0.0
+# DH1           =0.0,	0.0,	0.0
+# DC            =0.0,	0.0,	0.0
+# dXH           =0.0,	0.0,	0.0
+# dXH2          =0.0,	0.0,	0.0
+# dXH3          =0.0,	0.0,	0.0
+# fract(2,0,1)  =0.0,	0.0,	0.0
+set max_peak 2
+set chifactorN 1e+05
+set x(0) 0.0; free 0
+set x(1) 0.0; fix 1
+set x(2) 0.0; free 2
+set x(3) 0.0; free 3
+set x(4) 0.0; fix 4
+set x(5) 0.0; free 5
+set x(6) 0.0; free 6
+set x(7) 0.0; fix 7
+set x(8) 0.0; free 8
+set x(9) 0.0; free 9
+set x(10) 0.0; fix 10
+set x(11) 0.0; free 11
+set x(12) 0.0; free 12
+set x(13) 0.0; fix 13
+set x(14) 0.0; free 14
+set x(15) 0.0; fix 15
+set x(16) 0.0; fix 16
+set x(17) 0.0; free 17
+set x(18) 0.0; free 18
+set x(19) 0.0; free 19
+set x(20) 0.0; free 20
+set x(21) 0.0; free 21
+set x(22) 0.0; fix 22
+set x(23) 0.0; fix 23
+set x(24) 0.0; fix 24
+set x(25) 0.0; fix 25
+set x(26) 0.0; fix 26
+set x(27) 1.0; fix 27
+set x(28) 0.0; fix 28
+set x(29) 0.0; fix 29
+set x(30) 0.0; fix 30
+set x(31) 0.0; fix 31
+set x(32) 0.0; fix 32
+set x(33) 0.0; fix 33
+set x(34) 0.0; fix 34
+set x(35) 0.0; fix 35
+set x(36) 0.0; fix 36
+set x(37) 0.0; fix 37
+set x(38) 0.0; fix 38
+set x(39) 0.0; fix 39
+set x(40) 0.0; fix 40
+set x(41) 0.0; fix 41
+set x(42) 0.0; fix 42
+set x(43) 0.0; fix 43
+set x(44) 0.0; fix 44
+set x(45) 0.0; fix 45
+set x(46) 0.0; fix 46
+set x(47) 0.0; fix 47
+set x(48) 0.0; fix 48
+set x(49) 0.0; fix 49
+set x(50) 0.0; fix 50
+set x(51) 0.0; fix 51
+set x(52) 0.0; fix 52
+set x(53) 0.0; fix 53
+set x(54) 0.0; fix 54
+set x(55) 0.0; fix 55
+set x(56) 0.0; fix 56
+set x(57) 0.0; fix 57
+set x(58) 0.0; fix 58
+set x(59) 0.0; fix 59
+set x(60) 0.0; fix 60
+set x(61) 0.0; fix 61
+set x(62) 0.0; fix 62
+set x(63) 0.0; fix 63
+set x(64) 0.0; fix 64
+set x(65) 0.0; fix 65
+set x(66) 0.0; fix 66
+set x(67) 0.0; fix 67
+set x(68) 0.0; fix 68
+set x(69) 0.0; fix 69
+set carbGlyc(tol_s) -1
+set carbGlyc(tol_c) -1
+set carbGlyc(target_s) 3
+set carbGlyc(target_c) 14
+set carbGlyc(tol_a) -1
+set carbGlyc(target_a) 1
+set phosphate(tol_s) -1
+set phosphate(tol_c) -1
+set phosphate(target_s) 3
+set phosphate(target_c) 18
+set phosphate(tol_a) -1
+set phosphate(target_a) 1
+set choline(tol_s) -1
+set choline(tol_c) -1
+set choline(target_s) 3
+set choline(target_c) 20
+set choline(tol_a) -1
+set choline(target_a) 1
+set methine(tol_s) -1
+set methine(tol_c) -1
+set methine(target_s) 3
+set methine(target_c) 5
+set methine(tol_a) -1
+set methine(target_a) 1
+set methyl(tol_s) -1
+set methyl(tol_c) -1
+set methyl(target_s) 3
+set methyl(target_c) 0
+set methyl(tol_a) -1
+set methyl(target_a) 1
+set upperBounds(0) 0.0
+set upperBounds(2) 0.0
+set upperBounds(3) 0.0
+set upperBounds(5) 0.0
+set upperBounds(6) 0.0
+set upperBounds(8) 0.0
+set upperBounds(12) 0.0
+set upperBounds(14) 0.0
+set upperBounds(15) 0.0
+set upperBounds(17) 0.0
+set lowerBounds(0) 0.0
+set lowerBounds(2) 0.0
+set lowerBounds(3) 0.0
+set lowerBounds(5) 0.0
+set lowerBounds(6) 0.0
+set lowerBounds(8) 0.0
+set lowerBounds(12) 0.0
+set lowerBounds(14) 0.0
+set lowerBounds(15) 0.0
+set lowerBounds(17) 0.0
+set hasUpperBound(0) 0
+set hasUpperBound(2) 0
+set hasUpperBound(3) 0
+set hasUpperBound(5) 0
+set hasUpperBound(6) 0
+set hasUpperBound(8) 0
+set hasUpperBound(12) 0
+set hasUpperBound(14) 0
+set hasUpperBound(15) 0
+set hasUpperBound(17) 0
+set hasLowerBound(0) 0
+set hasLowerBound(2) 0
+set hasLowerBound(3) 0
+set hasLowerBound(5) 0
+set hasLowerBound(6) 0
+set hasLowerBound(8) 0
+set hasLowerBound(12) 0
+set hasLowerBound(14) 0
+set hasLowerBound(15) 0
+set hasLowerBound(17) 0

@@ -1,3 +1,6 @@
+/*
+What is this file for?
+*/
 #ifndef GUARD_CHI2_FCN_H
 #define GUARC_CHI2_FCN_H
 

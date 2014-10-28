@@ -13,89 +13,74 @@ set NePep 21.487
 proc pepOptWin {} {
 	global head Xpep Cpep Spep Vpep Vlipid VCG VPh VMe NePep
 	
-	toplevel .fitopts
-	wm title .fitopts "Peptide Gaussian"
+	toplevel .c
+	wm title .c "Peptide Gaussian"
+	set f [ frame .c.f ]
+	grid $f -column 0 -row 0
 
-	#############
-	set optframe [ frame .fitopts.optframe ]
-
-	label $optframe.head -text "peptide in head region (uncheck if in tail region)"
-	checkbutton $optframe.headbutton -variable head
-	grid $optframe.headbutton -row 1 -column 1
-	grid $optframe.head -row 1 -column 2
-
-	grid $optframe -row 1
-	
-	#############
-	set tframe [ frame .fitopts.tframe ]
+	label $f.head -text "peptide in head region (uncheck if in tail region)"
+	checkbutton $f.headbutton -variable head 
+	grid $f.head -row 0 -column 1 -sticky "w"
+	grid $f.headbutton -row 0 -column 0 -sticky "e"
 	
 	#Set up an entry field to specify Xpep, the center of a peptide Gaussian
-	label $tframe.xlabel -text "Xpep"
-	entry $tframe.xentry -textvariable Xpep -width 6 -borderwidth 2 
-	grid $tframe.xlabel -row 1 -column 1
-	grid $tframe.xentry -row 1 -column 2
+	label $f.xlabel -text "Gaussian center"
+	entry $f.xentry -textvariable Xpep -width 6 -borderwidth 2 
+	grid $f.xlabel -row 1 -column 1 -sticky "w"
+	grid $f.xentry -row 1 -column 0
 	
-	#Set up an entry field to specify Cpep, the amplitude of a peptide Gaussian
-	label $tframe.clabel -text "Cpep"
-	entry $tframe.centry -textvariable Cpep -width 6 -borderwidth 2
-	grid $tframe.clabel -row 2 -column 1
-	grid $tframe.centry -row 2 -column 2
+	# Set up an entry field to specify Cpep, the amplitude of a peptide Gaussian
+	#label $f.clabel -text "Gaussian amplitude (constrained by volume)"
+	#entry $f.centry -textvariable Cpep -width 6 -borderwidth 2
+	#grid $f.clabel -row 2 -column 0 -sticky "w"
+	#grid $f.centry -row 2 -column 1
 	
 	#Set up an entry field to specify Spep, the width of a peptide Gaussian
-	label $tframe.slabel -text "Spep"
-	entry $tframe.sentry -textvariable Spep -width 6 -borderwidth 2 
-	grid $tframe.slabel -row 3 -column 1
-	grid $tframe.sentry -row 3 -column 2
+	label $f.slabel -text "Gaussian width"
+	entry $f.sentry -textvariable Spep -width 6 -borderwidth 2 
+	grid $f.slabel -row 3 -column 1 -sticky "w"
+	grid $f.sentry -row 3 -column 0
 	
 	#Set up an entry field to specify Vpep, the volume of the peptide
-	label $tframe.vplabel -text "Vpep"
-	entry $tframe.vpentry -textvariable Vpep -width 6 -borderwidth 2 
-	grid $tframe.vplabel -row 4 -column 1
-	grid $tframe.vpentry -row 4 -column 2
+	label $f.vplabel -text "volume per (fractional) peptide"
+	entry $f.vpentry -textvariable Vpep -width 6 -borderwidth 2 
+	grid $f.vplabel -row 4 -column 1 -sticky "w"
+	grid $f.vpentry -row 4 -column 0
 	
 	#Set up an entry field to specify Vlipid, the volume of the lipid
-	label $tframe.vllabel -text "Vlipid"
-	entry $tframe.vlentry -textvariable Vlipid -width 6 -borderwidth 2 
-	grid $tframe.vllabel -row 5 -column 1
-	grid $tframe.vlentry -row 5 -column 2
+	label $f.vllabel -text "volume per lipid"
+	entry $f.vlentry -textvariable Vlipid -width 6 -borderwidth 2 
+	grid $f.vllabel -row 5 -column 1 -sticky "w"
+	grid $f.vlentry -row 5 -column 0
 	
 	#Set up an entry field to specify VCG, the volume of the CG group
-	label $tframe.vcglabel -text "VCG"
-	entry $tframe.vcgentry -textvariable VCG -width 6 -borderwidth 2 
-	grid $tframe.vcglabel -row 6 -column 1
-	grid $tframe.vcgentry -row 6 -column 2
+	label $f.vcglabel -text "volume per CG group"
+	entry $f.vcgentry -textvariable VCG -width 6 -borderwidth 2 
+	grid $f.vcglabel -row 6 -column 1 -sticky "w"
+	grid $f.vcgentry -row 6 -column 0
 	
 	#Set up an entry field to specify VPh, the volume of the Ph group
-	label $tframe.vphlabel -text "VPh"
-	entry $tframe.vphentry -textvariable VPh -width 6 -borderwidth 2 
-	grid $tframe.vphlabel -row 7 -column 1
-	grid $tframe.vphentry -row 7 -column 2
+	label $f.vphlabel -text "volume per Ph group"
+	entry $f.vphentry -textvariable VPh -width 6 -borderwidth 2 
+	grid $f.vphlabel -row 7 -column 1 -sticky "w"
+	grid $f.vphentry -row 7 -column 0
 	
 	#Set up an entry field to specify VMe, the volume of the methylene group
-	label $tframe.vmelabel -text "VMe"
-	entry $tframe.vmeentry -textvariable VMe -width 6 -borderwidth 2 
-	grid $tframe.vmelabel -row 8 -column 1
-	grid $tframe.vmeentry -row 8 -column 2
-	
-	grid $tframe -row 2
-	#############
-	set nframe [ frame .fitopts.nframe ]
+	label $f.vmelabel -text "volume per methylene group"
+	entry $f.vmeentry -textvariable VMe -width 6 -borderwidth 2 
+	grid $f.vmelabel -row 8 -column 1 -sticky "w"
+	grid $f.vmeentry -row 8 -column 0
 	
 	#Set up an entry field to specify NePep, the number of electrons in the peptide
-	label $nframe.neplabel -text "Number of electrons in peptide"
-	entry $nframe.nepentry -textvariable NePep -width 6 -borderwidth 2 
-	grid $nframe.neplabel -row 1 -column 1
-	grid $nframe.nepentry -row 1 -column 2
-	
-	grid $nframe -row 3
-	#############
+	label $f.neplabel -text "number of electrons per (fractional) peptide"
+	entry $f.nepentry -textvariable NePep -width 6 -borderwidth 2 
+	grid $f.neplabel -row 9 -column 1 -sticky "w"
+	grid $f.nepentry -row 9 -column 0
 	
 	#Set up an Apply button to reflect the parameter setting
-	set bframe [ frame .fitopts.bframe ]
-	button $bframe.keep -text Apply -borderwidth 4 -command { setPepGauss $head \
-	  $Xpep $Cpep $Spep $Vpep $Vlipid $VCG $VPh $VMe $NePep }
-	grid $bframe.keep -row 1 -column 1
-	grid $bframe -row 4
+	button $f.keep -text Apply -borderwidth 4 -command { setPepGauss $head \
+	    $Xpep $Cpep $Spep $Vpep $Vlipid $VCG $VPh $VMe $NePep }
+	grid $f.keep -row 10 -column 0 -columnspan 2 -sticky "n"
 }
 
 #Set peptide's Gaussian parameters, relevant volumes and volume ratio in appropriate entries.
@@ -333,133 +318,149 @@ proc constraints_window {} {
 	set w 7 
 	
 	toplevel .c
-	wm title .c "Additional Soft Constraints"
+	wm title .c "Additional Constraints"
 	set f [ frame .c.f]
 	
+	frame $f.f_1 -width 10
+	frame $f.f_2 -width 20
+	
+	label $f.l_left -text "soft constraint\nparameters"
+	label $f.l_right -text "upper/lower bound parameters"
+	
+	# Set up labels
 	label $f.l_1 -text "target\nvalue"
 	label $f.l_2 -text "tolerance"
 	label $f.l_3 -text "lower\nbound"
 	label $f.l_4 -text "upper\nbound"
-	label $f.l_5 -text "lower\nbound on"
-	label $f.l_6 -text "upper\nbound on"
+	label $f.l_5 -text ""
+	label $f.l_6 -text ""
 	
-  set n XCG
-  label $f.l_${n}_0 -text "XCG"
-	entry $f.e_${n}_1 -textvariable carbGlyc(target_c) -width $w
-	entry $f.e_${n}_2 -textvariable carbGlyc(tol_c) -width $w
-	entry $f.e_${n}_3 -textvariable lowerBounds(0) -width $w
-	entry $f.e_${n}_4 -textvariable upperBounds(0) -width $w 
-	checkbutton $f.c_${n}_5 -variable hasLowerBound(0) -width $w
-	checkbutton $f.c_${n}_6 -variable hasUpperBound(0) -width $w
+    set n XCG
+    set i 0
+    label $f.l_${n}_0 -text "XCG"
+	entry $f.e_${n}_2 -textvariable carbGlyc(target_c) -width $w
+	entry $f.e_${n}_3 -textvariable carbGlyc(tol_c) -width $w
+	entry $f.e_${n}_5 -textvariable lowerBounds($i) -width $w
+	entry $f.e_${n}_6 -textvariable upperBounds($i) -width $w 
+	checkbutton $f.c_${n}_7 -variable hasLowerBound($i)
+	checkbutton $f.c_${n}_8 -variable hasUpperBound($i)
 	
 	set n SCG
+	set i 2
 	label $f.l_${n}_0 -text "SCG"
-	entry $f.e_${n}_1 -textvariable carbGlyc(target_s) -width $w
-	entry $f.e_SCG_2 -textvariable carbGlyc(tol_s) -width $w
-	entry $f.e_SCG_3 -textvariable lowerBounds(2) -width $w 
-	entry $f.e_SCG_4 -textvariable upperBounds(2) -width $w
-  checkbutton $f.c_SCG_5 -variable hasLowerBound(2) -width $w
-	checkbutton $f.c_SCG_6 -variable hasUpperBound(2) -width $w	
+	entry $f.e_${n}_2 -textvariable carbGlyc(target_s) -width $w
+	entry $f.e_${n}_3 -textvariable carbGlyc(tol_s) -width $w
+	entry $f.e_${n}_5 -textvariable lowerBounds($i) -width $w 
+	entry $f.e_${n}_6 -textvariable upperBounds($i) -width $w
+    checkbutton $f.c_${n}_7 -variable hasLowerBound($i) 
+	checkbutton $f.c_${n}_8 -variable hasUpperBound($i) 
 	
 	set n XPh
 	set i 3
 	label $f.l_XPh_0 -text "XPh"
-	entry $f.e_XPh_1 -textvariable phosphate(target_c) -width $w
-	entry $f.e_XPh_2 -textvariable phosphate(tol_c) -width $w	
-	entry $f.e_XPh_3 -textvariable lowerBounds(3) -width $w 
-	entry $f.e_XPh_4 -textvariable upperBounds(3) -width $w
-  checkbutton $f.c_${n}_5 -variable hasLowerBound($i) -width $w
-	checkbutton $f.c_${n}_6 -variable hasUpperBound($i) -width $w		
+	entry $f.e_XPh_2 -textvariable phosphate(target_c) -width $w
+	entry $f.e_XPh_3 -textvariable phosphate(tol_c) -width $w	
+	entry $f.e_${n}_5 -textvariable lowerBounds($i) -width $w 
+	entry $f.e_${n}_6 -textvariable upperBounds($i) -width $w
+    checkbutton $f.c_${n}_7 -variable hasLowerBound($i) 
+	checkbutton $f.c_${n}_8 -variable hasUpperBound($i) 
 	
 	set n SPh
 	set i 5
 	label $f.l_SPh_0 -text "SPh"
-	entry $f.e_SPh_1 -textvariable phosphate(target_s) -width $w
-	entry $f.e_SPh_2 -textvariable phosphate(tol_s) -width $w	
-	entry $f.e_SPh_3 -textvariable lowerBounds(5) -width $w 
-	entry $f.e_SPh_4 -textvariable upperBounds(5) -width $w
-  checkbutton $f.c_${n}_5 -variable hasLowerBound($i) -width $w
-	checkbutton $f.c_${n}_6 -variable hasUpperBound($i) -width $w		
+	entry $f.e_SPh_2 -textvariable phosphate(target_s) -width $w
+	entry $f.e_SPh_3 -textvariable phosphate(tol_s) -width $w	
+	entry $f.e_${n}_5 -textvariable lowerBounds($i) -width $w 
+	entry $f.e_${n}_6 -textvariable upperBounds($i) -width $w
+    checkbutton $f.c_${n}_7 -variable hasLowerBound($i)
+	checkbutton $f.c_${n}_8 -variable hasUpperBound($i)	
 
 	set n XCh
 	set i 6
 	label $f.l_XCh_0 -text "XCh"	
-	entry $f.e_XCh_1 -textvariable choline(target_c) -width $w
-	entry $f.e_XCh_2 -textvariable choline(tol_c) -width $w
-	entry $f.e_XCh_3 -textvariable lowerBounds(6) -width $w
-	entry $f.e_XCh_4 -textvariable upperBounds(6) -width $w
-  checkbutton $f.c_${n}_5 -variable hasLowerBound($i) -width $w
-	checkbutton $f.c_${n}_6 -variable hasUpperBound($i) -width $w			
+	entry $f.e_XCh_2 -textvariable choline(target_c) -width $w
+	entry $f.e_XCh_3 -textvariable choline(tol_c) -width $w
+	entry $f.e_${n}_5 -textvariable lowerBounds($i) -width $w 
+	entry $f.e_${n}_6 -textvariable upperBounds($i) -width $w
+    checkbutton $f.c_${n}_7 -variable hasLowerBound($i)
+	checkbutton $f.c_${n}_8 -variable hasUpperBound($i)			
 
 	set n SCh
 	set i 8
 	label $f.l_SCh_0 -text "SCh"	
-	entry $f.e_SCh_1 -textvariable choline(target_s) -width $w
-	entry $f.e_SCh_2 -textvariable choline(tol_s) -width $w
-	entry $f.e_SCh_3 -textvariable lowerBounds(8) -width $w 
-	entry $f.e_SCh_4 -textvariable upperBounds(8) -width $w	
-  checkbutton $f.c_${n}_5 -variable hasLowerBound($i) -width $w
-	checkbutton $f.c_${n}_6 -variable hasUpperBound($i) -width $w
+	entry $f.e_SCh_2 -textvariable choline(target_s) -width $w
+	entry $f.e_SCh_3 -textvariable choline(tol_s) -width $w
+	entry $f.e_${n}_5 -textvariable lowerBounds($i) -width $w 
+	entry $f.e_${n}_6 -textvariable upperBounds($i) -width $w
+    checkbutton $f.c_${n}_7 -variable hasLowerBound($i)
+	checkbutton $f.c_${n}_8 -variable hasUpperBound($i)
 	
 	set n Xc1
 	set i 12		
 	label $f.l_Xc1_0 -text "Xc1"	
-	entry $f.e_Xc1_1 -textvariable methine(target_c) -width $w
-	entry $f.e_Xc1_2 -textvariable methine(tol_c) -width $w
-	entry $f.e_Xc1_3 -textvariable lowerBounds(12) -width $w 
-	entry $f.e_Xc1_4 -textvariable upperBounds(12) -width $w 
-  checkbutton $f.c_${n}_5 -variable hasLowerBound($i) -width $w
-	checkbutton $f.c_${n}_6 -variable hasUpperBound($i) -width $w
+	entry $f.e_Xc1_2 -textvariable methine(target_c) -width $w
+	entry $f.e_Xc1_3 -textvariable methine(tol_c) -width $w
+	entry $f.e_${n}_5 -textvariable lowerBounds($i) -width $w 
+	entry $f.e_${n}_6 -textvariable upperBounds($i) -width $w
+    checkbutton $f.c_${n}_7 -variable hasLowerBound($i)
+	checkbutton $f.c_${n}_8 -variable hasUpperBound($i)
 
 	set n Sc1
 	set i 14
 	label $f.l_Sc1_0 -text "Sc1"
-	entry $f.e_Sc1_1 -textvariable methine(target_s) -width $w	
-	entry $f.e_Sc1_2 -textvariable methine(tol_s) -width $w
-	entry $f.e_Sc1_3 -textvariable lowerBounds(14) -width $w 
-	entry $f.e_Sc1_4 -textvariable upperBounds(14) -width $w
-  checkbutton $f.c_${n}_5 -variable hasLowerBound($i) -width $w
-	checkbutton $f.c_${n}_6 -variable hasUpperBound($i) -width $w 
+	entry $f.e_Sc1_2 -textvariable methine(target_s) -width $w	
+	entry $f.e_Sc1_3 -textvariable methine(tol_s) -width $w
+	entry $f.e_${n}_5 -textvariable lowerBounds($i) -width $w 
+	entry $f.e_${n}_6 -textvariable upperBounds($i) -width $w
+    checkbutton $f.c_${n}_7 -variable hasLowerBound($i)
+	checkbutton $f.c_${n}_8 -variable hasUpperBound($i)	
 
 	set n Xc3
 	set i 15
 	label $f.l_Xc3_0 -text "Xc3"
-	entry $f.e_Xc3_1 -textvariable methyl(target_c) -width $w
-	entry $f.e_Xc3_2 -textvariable methyl(tol_c) -width $w
-	entry $f.e_Xc3_3 -textvariable lowerBounds(15) -width $w
-	entry $f.e_Xc3_4 -textvariable upperBounds(15) -width $w		
-  checkbutton $f.c_${n}_5 -variable hasLowerBound($i) -width $w
-	checkbutton $f.c_${n}_6 -variable hasUpperBound($i) -width $w
+	entry $f.e_Xc3_2 -textvariable methyl(target_c) -width $w
+	entry $f.e_Xc3_3 -textvariable methyl(tol_c) -width $w
+	entry $f.e_${n}_5 -textvariable lowerBounds($i) -width $w 
+	entry $f.e_${n}_6 -textvariable upperBounds($i) -width $w
+    checkbutton $f.c_${n}_7 -variable hasLowerBound($i)
+	checkbutton $f.c_${n}_8 -variable hasUpperBound($i)
 
 	set n Sc3
 	set i 17
 	label $f.l_Sc3_0 -text "Sc3"
-	entry $f.e_Sc3_1 -textvariable methyl(target_s) -width $w
-	entry $f.e_Sc3_2 -textvariable methyl(tol_s) -width $w
-	entry $f.e_Sc3_3 -textvariable lowerBounds(17) -width $w
-	entry $f.e_Sc3_4 -textvariable upperBounds(17) -width $w
-  checkbutton $f.c_${n}_5 -variable hasLowerBound($i) -width $w
-	checkbutton $f.c_${n}_6 -variable hasUpperBound($i) -width $w
+	entry $f.e_Sc3_2 -textvariable methyl(target_s) -width $w
+	entry $f.e_Sc3_3 -textvariable methyl(tol_s) -width $w
+	entry $f.e_${n}_5 -textvariable lowerBounds($i) -width $w 
+	entry $f.e_${n}_6 -textvariable upperBounds($i) -width $w
+    checkbutton $f.c_${n}_7 -variable hasLowerBound($i)
+	checkbutton $f.c_${n}_8 -variable hasUpperBound($i)
 
+    # Pack widgets
 	grid $f -column 0 -row 0
+    
+    grid $f.f_1 -column 1 -row 0 -rowspan 12
+	grid $f.l_left -column 2 -row 0 -columnspan 2 -sticky "n"
+	grid $f.f_2 -column 4 -row 0 -rowspan 12
+	grid $f.l_right -column 5 -row 0 -columnspan 4 -sticky "n"
 	
-	grid $f.l_1 -column 1 -row 0
-	grid $f.l_2 -column 2 -row 0
-	grid $f.l_3 -column 3 -row 0
-	grid $f.l_4 -column 4 -row 0
-	grid $f.l_5 -column 5 -row 0
-	grid $f.l_6 -column 6 -row 0
-  
-  set i 1
-  foreach name {XCG SCG XPh SPh XCh SCh Xc1 Sc1 Xc3 Sc3} {
-    grid $f.l_${name}_0 -column 0 -row $i
-    for {set j 1} {$j < 5} {incr j} {
-	    grid $f.e_${name}_$j -column $j -row $i
+	grid $f.l_1 -column 2 -row 1
+	grid $f.l_2 -column 3 -row 1
+	grid $f.l_3 -column 5 -row 1
+	grid $f.l_5 -column 6 -row 1 -sticky "w"
+	grid $f.l_4 -column 7 -row 1
+	grid $f.l_6 -column 8 -row 1 -sticky "w"
+    
+    # starting row value
+    set i 2
+    foreach name {XCG SCG XPh SPh XCh SCh Xc1 Sc1 Xc3 Sc3} {
+        grid $f.l_${name}_0 -column 0 -row $i
+        grid $f.e_${name}_2 -column 2 -row $i
+        grid $f.e_${name}_3 -column 3 -row $i
+        grid $f.e_${name}_5 -column 5 -row $i
+        grid $f.c_${name}_7 -column 6 -row $i -sticky "w"
+        grid $f.e_${name}_6 -column 7 -row $i      
+        grid $f.c_${name}_8 -column 8 -row $i -sticky "w"
+        incr i
     }
-    puts $name
-    grid $f.c_${name}_5 -column 5 -row $i
-    grid $f.c_${name}_6 -column 6 -row $i
-    incr i
-  }
   
 }
